@@ -1,0 +1,103 @@
+/*
+ * 毕数飞行平台 C端设计 Token
+ * 来源:《毕数飞行平台_C端小程序UI设计规范 v1.0》
+ * 注意:仅收录生产基线 token;演示层附录 A 扩展(Outfit 字体/纹理)在小程序端降级
+ */
+:root,
+page {
+  /* 品牌色 */
+  --bs-brand-primary: #1677FF;
+  --bs-brand-primary-deep: #0958D9;
+  --bs-brand-gradient: linear-gradient(135deg, #1677FF 0%, #00C2FF 100%);
+  --bs-brand-accent: #FF7A00;
+  --bs-brand-accent-deep: #E66A00;
+  --bs-brand-teal: #00B578;
+
+  /* 功能色 */
+  --bs-success: #00B578;
+  --bs-warning: #FF8F1F;
+  --bs-danger: #FA5151;
+  --bs-info: #1677FF;
+
+  /* 中性色 */
+  --bs-text-primary: #1A1A1A;
+  --bs-text-secondary: #595959;
+  --bs-text-tertiary: #8C8C8C;
+  --bs-text-disabled: #BFBFBF;
+  --bs-border: #E5E6EB;
+  --bs-divider: #F0F1F5;
+  --bs-bg-page: #F5F6F8;
+  --bs-bg-card: #FFFFFF;
+
+  /* 字号 */
+  --bs-font-h1: 40rpx;
+  --bs-font-h2: 34rpx;
+  --bs-font-h3: 32rpx;
+  --bs-font-body: 30rpx;
+  --bs-font-caption: 26rpx;
+  --bs-font-footnote: 24rpx;
+
+  /* 间距 (4px = 8rpx 基准) */
+  --bs-space-1: 8rpx;
+  --bs-space-2: 16rpx;
+  --bs-space-3: 24rpx;
+  --bs-space-4: 32rpx;
+  --bs-space-5: 40rpx;
+  --bs-space-6: 48rpx;
+
+  /* 圆角 */
+  --bs-radius-sm: 8rpx;
+  --bs-radius-md: 16rpx;
+  --bs-radius-lg: 24rpx;
+  --bs-radius-xl: 32rpx;
+  --bs-radius-full: 999rpx;
+
+  /* 阴影(扁平化,弱化) */
+  --bs-shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  --bs-shadow-float: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
+}
+
+/* ===== 通用业务类 ===== */
+.bs-page {
+  min-height: 100vh;
+  background: var(--bs-bg-page);
+}
+
+.bs-card {
+  background: var(--bs-bg-card);
+  border-radius: var(--bs-radius-lg);
+  padding: var(--bs-space-4);
+  margin: 0 var(--bs-space-4) var(--bs-space-3);
+  box-shadow: var(--bs-shadow-card);
+}
+
+.bs-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 状态徽章 */
+.bs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.bs-badge--primary { background: rgba(22, 119, 255, 0.1); color: var(--bs-brand-primary); }
+.bs-badge--success { background: rgba(0, 181, 120, 0.1); color: var(--bs-success); }
+.bs-badge--warning { background: rgba(255, 143, 31, 0.12); color: #D96A00; }
+.bs-badge--danger  { background: rgba(250, 81, 81, 0.1); color: var(--bs-danger); }
+.bs-badge--gold {
+  background: linear-gradient(135deg, #FFE8B8, #F7BA48);
+  color: #6D4C00;
+  font-weight: 600;
+}
+
+/* 天空渐变头图(小程序端降级:纯品牌渐变) */
+.bs-sky-hero {
+  background: linear-gradient(160deg, #0958D9 0%, #1677FF 55%, #3D9BFF 100%);
+  color: #fff;
+}

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>毕数飞行平台 - B端用机企业与机组管理后台</title>
+  <!-- Vue 3 & Font Awesome & Tailwind CSS CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --brand-primary: #1677FF;
+      --brand-gradient: linear-gradient(135deg, #1677FF 0%, #00C2FF 100%);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex">
+
+<div id="app" class="flex-1 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0">
+    <div class="h-16 flex items-center gap-3 px-6 bg-slate-950 text-white font-bold text-lg border-b border-slate-800">
+      <i class="fa-solid fa-building-user text-blue-400 text-2xl"></i>
+      <span>企业与机组后台</span>
+    </div>
+    
+    <!-- Enterprise Info Card -->
+    <div class="p-4 mx-3 my-3 bg-slate-800/80 rounded-xl border border-slate-700">
+      <div class="text-xs text-blue-400 font-semibold mb-1">企业认证 · 金牌用机单位</div>
+      <div class="text-sm font-bold text-white truncate">四川省天府空间信息测绘有限公司</div>
+      <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+        已绑定机组：4个 · 飞手：12人
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="flex-1 px-3 space-y-1.5 overflow-y-auto">
+      <button @click="currentNav = 'dashboard'" :class="currentNav === 'dashboard' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-chart-line w-5"></i>
+        <span>企业运营总览</span>
+      </button>
+
+      <button @click="currentNav = 'fleet'" :class="currentNav === 'fleet' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-people-group w-5 text-sky-400"></i>
+        <div class="flex-1 text-left flex justify-between items-center">
+          <span>机组编队与飞手调度</span>
+          <span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded-full">核心</span>
+        </div>
+      </button>
+
+      <button @click="currentNav = 'orders'" :class="currentNav === 'orders' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-file-signature w-5"></i>
+        <span>企业发单与合同存证</span>
+      </button>
+
+      <button @click="currentNav = 'store'" :class="currentNav === 'store' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-shop w-5 text-emerald-400"></i>
+        <span>企业店铺与商品上架</span>
+      </button>
+
+      <button @click="currentNav = 'finance'" :class="currentNav === 'finance' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-receipt w-5"></i>
+        <span>绩效分润与专票对账</span>
+      </button>
+    </nav>
+
+    <!-- Bottom Portal Return -->
+    <div class="p-4 border-t border-slate-800 text-xs text-slate-400 flex justify-between items-center">
+      <a href="index.html" class="hover:text-blue-400 flex items-center gap-1.5">
+        <i class="fa-solid fa-house"></i> 平台统一门户
+      </a>
+      <span>V3.0 演示版</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
+    <!-- Top Header Bar -->
+    <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <h1 class="text-lg font-bold text-slate-800">
+          {{ navTitles[currentNav] }}
+        </h1>
+        <span class="bg-blue-50 text-blue-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-200">
+          VIP 会员有效期至：2027-08-25
+        </span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow" @click="currentNav = 'orders'">
+          <i class="fa-solid fa-plus"></i> 发布大型飞行项目
+        </button>
+        <div class="flex items-center gap-2">
+          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Manager" class="w-8 h-8 rounded-full border bg-slate-100" />
+          <span class="text-sm font-semibold text-slate-700">刘总 (运营总监)</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <!-- ================= 1. 企业运营总览 ================= -->
+      <div v-if="currentNav === 'dashboard'" class="space-y-6">
+        <div class="grid grid-cols-4 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">执行中飞行项目</div>
+            <div class="text-3xl font-bold text-slate-800 mt-2">6 <span class="text-sm font-normal text-slate-400">个</span></div>
+            <div class="text-xs text-emerald-600 font-semibold mt-2">空域批文均已回传生效</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">在岗持证飞手 / 机组</div>
+            <div class="text-3xl font-bold text-blue-600 mt-2">12 <span class="text-sm font-normal text-slate-400">人 / 4 组</span></div>
+            <div class="text-xs text-slate-500 mt-2">均持 CAAC 超视距执照</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">本月作业总产值 (流水)</div>
+            <div class="text-3xl font-bold text-slate-900 mt-2">¥168,400</div>
+            <div class="text-xs text-emerald-600 font-semibold mt-2">环比上月 +22.4%</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">已开具增值税专票</div>
+            <div class="text-3xl font-bold text-emerald-600 mt-2">¥142,000</div>
+            <div class="text-xs text-slate-400 mt-1">13% 进项税抵扣已合规入账</div>
+          </div>
+        </div>
+
+        <!-- Dispatch Table -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-800 text-base">企业各机组今日作业调度实时状态</h3>
+            <button class="text-xs text-blue-600 font-semibold hover:underline" @click="currentNav = 'fleet'">进入机组管理 →</button>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div v-for="team in fleetList" :key="team.id" class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="font-bold text-slate-900 text-base">{{ team.name }}</span>
+                  <div class="text-xs text-slate-500 mt-0.5">机长：{{ team.leader }} ({{ team.leaderLicense }}) · 成员 {{ team.members }} 人</div>
+                </div>
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full" :class="team.status === '作业中' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'">{{ team.status }}</span>
+              </div>
+              <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-600 flex justify-between">
+                <span>当前任务：{{ team.currentTask }}</span>
+                <span class="font-bold text-blue-600">产值 ¥{{ team.monthlyRevenue }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 2. 机组编队与飞手调度 (CORE) ================= -->
+      <div v-if="currentNav === 'fleet'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">企业机组编队与持证飞手名册</h2>
+              <p class="text-xs text-slate-500 mt-1">支持自由飞手企业挂靠、多飞手机组组建、任务指派与自动绩效分润规则设置</p>
+            </div>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg" @click="showToast('已生成飞手邀请码：TF-UAV-2026')">
+              <i class="fa-solid fa-user-plus mr-1"></i> 邀请持证飞手加入企业
+            </button>
+          </div>
+
+          <!-- Pilots Table -->
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-xs">
+                <tr>
+                  <th class="py-3.5 px-6">飞手姓名 / 电话</th>
+                  <th class="py-3.5 px-6">所属机组 / 岗位</th>
+                  <th class="py-3.5 px-6">CAAC 执照编号</th>
+                  <th class="py-3.5 px-6">平台强制保险状态</th>
+                  <th class="py-3.5 px-6">平台信用分</th>
+                  <th class="py-3.5 px-6">绩效分润比例</th>
+                  <th class="py-3.5 px-6 text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tr v-for="pilot in pilotsList" :key="pilot.id" class="hover:bg-slate-50 transition">
+                  <td class="py-4 px-6">
+                    <div class="font-semibold text-slate-900">{{ pilot.name }}</div>
+                    <div class="text-xs text-slate-400">{{ pilot.phone }}</div>
+                  </td>
+                  <td class="py-4 px-6">
+                    <span class="text-xs font-bold bg-sky-50 text-sky-800 px-2 py-0.5 rounded border border-sky-200">{{ pilot.team }}</span>
+                    <span class="text-xs text-slate-500 ml-1.5">({{ pilot.role }})</span>
+                  </td>
+                  <td class="py-4 px-6 font-mono text-xs font-semibold text-slate-700">{{ pilot.license }}</td>
+                  <td class="py-4 px-6">
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600">
+                      <i class="fa-solid fa-shield-halved"></i> 平台强制险随单自动附加
+                    </span>
+                  </td>
+                  <td class="py-4 px-6 font-bold text-emerald-600">{{ pilot.credit }} 分</td>
+                  <td class="py-4 px-6 text-xs font-semibold text-slate-800">
+                    企业 30% : 飞手 70%
+                  </td>
+                  <td class="py-4 px-6 text-right">
+                    <button class="text-xs text-blue-600 hover:text-blue-800 font-semibold" @click="showToast('已为飞手 ' + pilot.name + ' 分派新任务工单')">指派工单</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3. 企业发单与合同存证 ================= -->
+      <div v-if="currentNav === 'orders'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">企业大型飞行需求发布与合同管理</h2>
+              <p class="text-xs text-slate-500 mt-1">在线签署具备法律效力的《无人机技术服务电子合同》（内置防跳单与安全免责条款）</p>
+            </div>
+            <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg" @click="showToast('已新建航测大单合同草稿')">
+              <i class="fa-solid fa-file-contract mr-1"></i> 新建项目制合同
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <div class="border border-slate-200 rounded-xl p-4 flex justify-between items-center bg-slate-50/50">
+              <div>
+                <div class="font-bold text-slate-900 text-base">【已签署】德阳市中江县 50km 高压输电线路巡检项目</div>
+                <div class="text-xs text-slate-500 mt-1">合同编号：HT-20260815-0982 · 金额 ¥38,000 · 资金已托管在招商银行专户</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">履约中</span>
+                <button class="text-xs text-blue-600 font-semibold hover:underline" @click="showToast('调阅 e签宝 电子存证证书')">查看电子存证</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 4. 企业店铺与商品上架 ================= -->
+      <div v-if="currentNav === 'store'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">企业店铺商品与设备管理（B端商城后台）</h2>
+              <p class="text-xs text-slate-500 mt-1">支持品牌全新无人机、官方配件、行业载荷上架，平台交易佣金 3%~5%</p>
+            </div>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg" @click="showToast('已打开商品批量上架工作台')">
+              <i class="fa-solid fa-plus mr-1"></i> 上架全新商品 / 载荷
+            </button>
+          </div>
+
+          <div class="border border-slate-200 rounded-xl overflow-hidden">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-xs">
+                <tr>
+                  <th class="py-3.5 px-6">商品名称</th>
+                  <th class="py-3.5 px-6">分类 / 品牌</th>
+                  <th class="py-3.5 px-6">售价</th>
+                  <th class="py-3.5 px-6">库存</th>
+                  <th class="py-3.5 px-6">店铺状态</th>
+                  <th class="py-3.5 px-6 text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tr class="hover:bg-slate-50 transition">
+                  <td class="py-4 px-6 font-semibold">大疆 DJI Matrice 350 RTK 行业机</td>
+                  <td class="py-4 px-6 text-xs text-slate-500">全新整机 / 大疆官方授权</td>
+                  <td class="py-4 px-6 font-bold text-blue-600">¥49,888.00</td>
+                  <td class="py-4 px-6">5 台</td>
+                  <td class="py-4 px-6"><span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">在售中</span></td>
+                  <td class="py-4 px-6 text-right">
+                    <button class="text-xs text-blue-600 font-semibold hover:underline" @click="showToast('编辑商品SKU与价格')">编辑</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 5. 绩效分润与专票对账 ================= -->
+      <div v-if="currentNav === 'finance'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">企业对公账单与飞手绩效分润中心</h2>
+          <div class="grid grid-cols-3 gap-6 mb-6">
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+              <div class="text-xs text-slate-500">可提现对公结算余额</div>
+              <div class="text-2xl font-bold text-emerald-600 mt-1">¥92,400.00</div>
+              <div class="text-xs text-slate-400 mt-1">招商银行成都高新支行</div>
+            </div>
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+              <div class="text-xs text-slate-500">待发放飞手内部绩效佣金</div>
+              <div class="text-2xl font-bold text-blue-600 mt-1">¥48,600.00</div>
+              <div class="text-xs text-slate-400 mt-1">涉及 12 名机组成员</div>
+            </div>
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+              <div class="text-xs text-slate-500">已申请 13% 增值税专票</div>
+              <div class="text-2xl font-bold text-slate-700 mt-1">¥142,000.00</div>
+              <div class="text-xs text-slate-400 mt-1">税额 ¥18,460.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const { createApp, ref } = Vue;
+
+  createApp({
+    setup() {
+      const currentNav = ref('fleet');
+
+      const navTitles = {
+        dashboard: '企业运营总览',
+        fleet: '机组编队与飞手调度',
+        orders: '企业发单与合同存证',
+        store: '企业店铺与商品上架',
+        finance: '绩效分润与专票对账'
+      };
+
+      const fleetList = ref([
+        { id: 1, name: '天府巡检一组 (电力专线)', leader: '王建军', leaderLicense: '多旋翼超视距', members: 3, status: '作业中', currentTask: '温江区 220kV 巡检', monthlyRevenue: '42,000' },
+        { id: 2, name: '天府航测二组 (实景三维)', leader: '李德华', leaderLicense: '固定翼超视距', members: 4, status: '作业中', currentTask: '兴隆湖倾斜摄影测绘', monthlyRevenue: '68,000' },
+        { id: 3, name: '金堂飞防应急组 (植保)', leader: '赵志强', leaderLicense: '超视距教员', members: 3, status: '待命', currentTask: '暂无任务', monthlyRevenue: '32,000' },
+        { id: 4, name: '重载吊运机组 (工程)', leader: '孙长林', leaderLicense: '多旋翼超视距', members: 2, status: '待命', currentTask: '暂无任务', monthlyRevenue: '26,400' }
+      ]);
+
+      const pilotsList = ref([
+        { id: 1, name: '王建军', phone: '138****9921', team: '巡检一组', role: '机长', license: 'CAAC-UAV-2026089912', credit: 98 },
+        { id: 2, name: '李德华', phone: '139****1145', team: '航测二组', role: '机长', license: 'CAAC-UAV-2026085523', credit: 99 },
+        { id: 3, name: '刘晓东', phone: '137****6632', team: '巡检一组', role: '副手', license: 'CAAC-UAV-2026083310', credit: 96 },
+        { id: 4, name: '陈天明', phone: '136****8871', team: '航测二组', role: '数据处理员', license: 'CAAC-UAV-2026081190', credit: 97 }
+      ]);
+
+      const showToast = (msg) => {
+        alert(msg);
+      };
+
+      return {
+        currentNav,
+        navTitles,
+        fleetList,
+        pilotsList,
+        showToast
+      };
+    }
+  }).mount('#app');
+</script>
+
+</body>
+</html>

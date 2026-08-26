@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>毕数飞行平台 - B端培训机构管理后台</title>
+  <!-- Vue 3 & Font Awesome & Tailwind CSS CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --brand-primary: #1677FF;
+      --brand-gradient: linear-gradient(135deg, #1677FF 0%, #00C2FF 100%);
+      --color-success: #00B578;
+      --color-warning: #FF8F1F;
+      --color-danger: #FA5151;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex">
+
+<div id="app" class="flex-1 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0">
+    <div class="h-16 flex items-center gap-3 px-6 bg-slate-950 text-white font-bold text-lg border-b border-slate-800">
+      <i class="fa-solid fa-graduation-cap text-sky-400 text-2xl"></i>
+      <span>培训机构工作台</span>
+    </div>
+    
+    <!-- Institution Badge -->
+    <div class="p-4 mx-3 my-3 bg-slate-800/80 rounded-xl border border-slate-700">
+      <div class="text-xs text-sky-400 font-semibold mb-1">人社定点 / CAAC授权基地</div>
+      <div class="text-sm font-bold text-white truncate">四川省无人机职业技能实训基地</div>
+      <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+        人社专网接口：已联通
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="flex-1 px-3 space-y-1.5 overflow-y-auto">
+      <button @click="currentNav = 'dashboard'" :class="currentNav === 'dashboard' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-chart-pie w-5"></i>
+        <span>教务总览看板</span>
+      </button>
+
+      <button @click="currentNav = 'attendance'" :class="currentNav === 'attendance' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-user-clock w-5"></i>
+        <span>人脸打卡与学时考勤</span>
+      </button>
+
+      <button @click="currentNav = 'subsidy'" :class="currentNav === 'subsidy' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-file-shield w-5 text-emerald-400"></i>
+        <div class="flex-1 text-left flex justify-between items-center">
+          <span>人社补贴“五位一体”申报</span>
+          <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full">核心</span>
+        </div>
+      </button>
+
+      <button @click="currentNav = 'caac'" :class="currentNav === 'caac' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-id-card w-5 text-amber-400"></i>
+        <span>CAAC排考与证书补贴</span>
+      </button>
+
+      <button @click="currentNav = 'finance'" :class="currentNav === 'finance' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-wallet w-5"></i>
+        <span>资金监管与对公结算</span>
+      </button>
+    </nav>
+
+    <!-- Bottom Portal Return -->
+    <div class="p-4 border-t border-slate-800 text-xs text-slate-400 flex justify-between items-center">
+      <a href="index.html" class="hover:text-sky-400 flex items-center gap-1.5">
+        <i class="fa-solid fa-house"></i> 平台统一门户
+      </a>
+      <span>V3.0 演示版</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
+    <!-- Top Header Bar -->
+    <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <h1 class="text-lg font-bold text-slate-800">
+          {{ navTitles[currentNav] }}
+        </h1>
+        <span class="bg-sky-50 text-sky-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-sky-200">
+          当前批次：2026年第08期（成都市人社补贴班）
+        </span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button class="flex items-center gap-2 text-sm text-slate-600 hover:text-sky-600 font-medium px-3 py-1.5 rounded-lg border border-slate-200 bg-white" @click="showToast('已连接地方人社局技能培训综合监管专窗')">
+          <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+          <span>人社专窗通道正常</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Teacher" class="w-8 h-8 rounded-full border bg-slate-100" />
+          <span class="text-sm font-semibold text-slate-700">张教务主管</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <!-- ================= 1. 教务总览看板 ================= -->
+      <div v-if="currentNav === 'dashboard'" class="space-y-6">
+        <!-- Metric Cards -->
+        <div class="grid grid-cols-4 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">在读技能学员 (零费用)</div>
+            <div class="text-3xl font-bold text-slate-800 mt-2">128 <span class="text-sm font-normal text-slate-400">人</span></div>
+            <div class="text-xs text-emerald-600 font-semibold mt-2 flex items-center gap-1">
+              <i class="fa-solid fa-arrow-trend-up"></i> 人社资格审核 100% 通过
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">人社补贴待申报/拨付</div>
+            <div class="text-3xl font-bold text-sky-600 mt-2">¥450,000</div>
+            <div class="text-xs text-slate-500 mt-2 flex items-center gap-1">
+              已归集完成 3 个班级证据链
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">CAAC考证送考通过率</div>
+            <div class="text-3xl font-bold text-amber-500 mt-2">94.2%</div>
+            <div class="text-xs text-slate-500 mt-2">
+              本月已出证 48 本 · 补贴批量申报中
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">报名即分账 · 本月已到账</div>
+            <div class="text-3xl font-bold text-emerald-600 mt-2">¥307,200</div>
+            <div class="text-xs text-slate-500 mt-2">
+              学员缴费成功即结算 (已扣平台20%)
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Banner -->
+        <div class="bg-gradient-to-r from-sky-600 to-blue-700 text-white rounded-2xl p-6 flex justify-between items-center shadow-md">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-sky-200 font-bold">2026年第08期 结业考核已完成</div>
+            <h2 class="text-xl font-bold mt-1">一键生成人社补贴“五位一体”材料包直报人社专窗</h2>
+            <p class="text-sm text-sky-100 mt-1">包含结业证书（带PT防伪码）、全流程考勤日志、实操评分表及GPS水印视频存证</p>
+          </div>
+          <button @click="currentNav = 'subsidy'" class="bg-white text-sky-600 hover:bg-sky-50 font-bold px-6 py-3 rounded-xl shadow-lg transition">
+            前往申报中心 →
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= 2. 人脸打卡与学时考勤 ================= -->
+      <div v-if="currentNav === 'attendance'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">技能培训学员考勤与飞行学时流水</h3>
+              <p class="text-xs text-slate-500 mt-0.5">严格遵循人社部《关于规范职业技能培训过程监管的通知》，线上防挂机微表情抓拍 + 线下指纹打卡</p>
+            </div>
+            <button class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold px-4 py-2 rounded-lg" @click="showToast('正在导出教育部/人社部标准考勤打卡 Excel')">
+              <i class="fa-solid fa-file-excel mr-1"></i> 导出考勤报表
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-xs">
+                <tr>
+                  <th class="py-3.5 px-6">学员姓名 / 身份证</th>
+                  <th class="py-3.5 px-6">培训工种</th>
+                  <th class="py-3.5 px-6">线上理论学时 (微表情)</th>
+                  <th class="py-3.5 px-6">线下实操学时 (真机打卡)</th>
+                  <th class="py-3.5 px-6">考勤达标率</th>
+                  <th class="py-3.5 px-6">人社补贴资格</th>
+                  <th class="py-3.5 px-6 text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tr v-for="stu in studentList" :key="stu.id" class="hover:bg-slate-50 transition">
+                  <td class="py-4 px-6">
+                    <div class="font-semibold text-slate-900">{{ stu.name }}</div>
+                    <div class="text-xs text-slate-400">{{ stu.idCard }}</div>
+                  </td>
+                  <td class="py-4 px-6 font-medium">{{ stu.course }}</td>
+                  <td class="py-4 px-6 text-emerald-600 font-semibold">{{ stu.theoryHours }} / 8 课时 (100%)</td>
+                  <td class="py-4 px-6 text-sky-600 font-semibold">{{ stu.flightHours }} / 16 课时 ({{ stu.flightHours >= 16 ? '100%' : '87%' }})</td>
+                  <td class="py-4 px-6">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <i class="fa-solid fa-check text-xs"></i> 达标 {{ stu.rate }}%
+                    </span>
+                  </td>
+                  <td class="py-4 px-6">
+                    <span class="text-xs bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded border border-blue-200">
+                      {{ stu.subsidyType }}
+                    </span>
+                  </td>
+                  <td class="py-4 px-6 text-right">
+                    <button class="text-xs text-sky-600 hover:text-sky-800 font-semibold" @click="showToast('调阅学员人脸抓拍与GPS打卡影像')">调阅打卡日志</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3. 人社补贴“五位一体”申报中心 (CORE) ================= -->
+      <div v-if="currentNav === 'subsidy'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex justify-between items-start mb-6">
+            <div>
+              <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase">人社补贴全过程证据链引擎</span>
+              <h2 class="text-xl font-bold text-slate-900 mt-2">“五位一体”合规材料一键归集与申报向导</h2>
+              <p class="text-xs text-slate-500 mt-1">对接人社局 5 大审核标准（主体合规、资格排重、打卡率≥80%、成绩合格、电子存证一致性）</p>
+            </div>
+            <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-sm" @click="submitBatchSubsidy">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>生成批次并直报人社局专窗</span>
+            </button>
+          </div>
+
+          <!-- 5-in-1 Evidence Package Cards -->
+          <div class="grid grid-cols-5 gap-4">
+            <!-- 1. 结业证书 -->
+            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/70 hover:bg-white hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center text-lg mb-3">
+                <i class="fa-solid fa-certificate"></i>
+              </div>
+              <div class="font-bold text-sm text-slate-800">1. 结业合格证书</div>
+              <div class="text-xs text-slate-500 mt-1">唯一编号 PT2026085001... 带防伪二维码可穿透验真</div>
+              <div class="mt-3 text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check"></i> 40 份已电子签章</div>
+            </div>
+
+            <!-- 2. 学员身份备案 -->
+            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/70 hover:bg-white hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-lg mb-3">
+                <i class="fa-solid fa-id-card-clip"></i>
+              </div>
+              <div class="font-bold text-sm text-slate-800">2. 学员身份备案表</div>
+              <div class="text-xs text-slate-500 mt-1">开班花名册、就业/失业/农村劳动力资格排重认证</div>
+              <div class="mt-3 text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check"></i> 人社系统已核验</div>
+            </div>
+
+            <!-- 3. 全程学时考勤 -->
+            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/70 hover:bg-white hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg mb-3">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+              <div class="font-bold text-sm text-slate-800">3. 学时考勤打卡表</div>
+              <div class="text-xs text-slate-500 mt-1">线上微表情防刷课日志 + 线下每日指纹签到表</div>
+              <div class="mt-3 text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check"></i> 平均达标率 98.5%</div>
+            </div>
+
+            <!-- 4. 考核成绩单 -->
+            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/70 hover:bg-white hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-lg mb-3">
+                <i class="fa-solid fa-square-poll-vertical"></i>
+              </div>
+              <div class="font-bold text-sm text-slate-800">4. 理论/实操考评表</div>
+              <div class="text-xs text-slate-500 mt-1">理论机考得分 + 8字飞行实操分项评定 (考评员签名)</div>
+              <div class="mt-3 text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check"></i> 全部 ≥ 85分及格</div>
+            </div>
+
+            <!-- 5. 现场影像佐证 -->
+            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/70 hover:bg-white hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-lg mb-3">
+                <i class="fa-solid fa-camera-retro"></i>
+              </div>
+              <div class="font-bold text-sm text-slate-800">5. 现场影像存证包</div>
+              <div class="text-xs text-slate-500 mt-1">含 GPS 经纬度/北京时间水印的实操飞行与考核录像</div>
+              <div class="mt-3 text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check"></i> 128 张防伪照片</div>
+            </div>
+          </div>
+
+          <!-- Batch Preview Table -->
+          <div class="mt-6 border border-slate-200 rounded-xl overflow-hidden">
+            <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center text-xs font-semibold text-slate-600">
+              <span>待申报批次：SC-CD-202608-01 (无人机植保与电力巡检班) · 申报补贴金额 ¥160,000</span>
+              <span class="text-sky-600">补贴标准：¥4,000 / 人</span>
+            </div>
+            <div class="p-4 bg-white flex justify-between items-center">
+              <div class="text-xs text-slate-500">
+                本批次共 <strong>40 名合格学员</strong>。材料经系统自动比对无替考、无重复补贴记录，满足人社直报标准。
+              </div>
+              <button class="text-xs text-slate-700 hover:text-slate-900 font-semibold border border-slate-300 px-3 py-1.5 rounded-lg bg-slate-50" @click="showToast('已下载完整五位一体压缩包（附带人社验真哈希值）')">
+                <i class="fa-solid fa-download mr-1"></i> 打包下载证据链 ZIP (1.2GB)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 4. CAAC 考证排考与证书回传中心 ================= -->
+      <div v-if="currentNav === 'caac'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">CAAC 执照考证排考与证书回传中心</h2>
+              <p class="text-xs text-slate-500 mt-1">学费采用「报名即分账」模式实时结算;学员考取执照后在此回传证书,为其解锁平台接单权限并批量申报人社证书补贴</p>
+            </div>
+            <button class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold px-4 py-2 rounded-lg" @click="showCaacModal = true">
+              <i class="fa-solid fa-upload mr-1"></i> 单笔 / 批量回传 CAAC 执照
+            </button>
+          </div>
+
+          <!-- CAAC Student Roster -->
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-xs">
+                <tr>
+                  <th class="py-3.5 px-6">学员姓名</th>
+                  <th class="py-3.5 px-6">报考执照级别 / 机型</th>
+                  <th class="py-3.5 px-6">报名缴费 (已分账)</th>
+                  <th class="py-3.5 px-6">民航统考成绩</th>
+                  <th class="py-3.5 px-6">CAAC 执照状态</th>
+                  <th class="py-3.5 px-6">人社证书补贴</th>
+                  <th class="py-3.5 px-6 text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tr v-for="caac in caacList" :key="caac.id" class="hover:bg-slate-50 transition">
+                  <td class="py-4 px-6 font-semibold text-slate-900">{{ caac.name }}</td>
+                  <td class="py-4 px-6">
+                    <span class="text-xs font-semibold bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200">{{ caac.level }}</span>
+                  </td>
+                  <td class="py-4 px-6 font-bold text-slate-800">¥{{ caac.fee }} <span class="text-xs font-normal text-emerald-600">已分账 ¥{{ caac.fee * 0.8 }}</span></td>
+                  <td class="py-4 px-6 text-xs">
+                    理论 {{ caac.theoryScore }}分 / 实操 {{ caac.flightScore }}分
+                  </td>
+                  <td class="py-4 px-6">
+                    <span v-if="caac.isCertified" class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600">
+                      <i class="fa-solid fa-circle-check"></i> 已出证 ({{ caac.licenseNo }})
+                    </span>
+                    <span v-else class="inline-flex items-center gap-1 text-xs font-semibold text-amber-500">
+                      <i class="fa-regular fa-clock"></i> 待回传证书
+                    </span>
+                  </td>
+                  <td class="py-4 px-6 text-xs">
+                    <div v-if="caac.isCertified" class="text-emerald-700 font-semibold">补贴 ¥2,500 申报中</div>
+                    <div v-else class="text-slate-400">出证后可申报</div>
+                  </td>
+                  <td class="py-4 px-6 text-right">
+                    <button v-if="!caac.isCertified" class="text-xs text-sky-600 hover:text-sky-800 font-semibold" @click="openCertUpload(caac)">回传执照</button>
+                    <button v-else class="text-xs text-slate-500 hover:text-slate-700 font-semibold" @click="showToast('已查看电子执照截图与UOM校验记录')">查看证照</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 5. 资金监管与对公结算 ================= -->
+      <div v-if="currentNav === 'finance'" class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">培训机构对公财务账户</h2>
+          <div class="grid grid-cols-3 gap-6 mb-6">
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+              <div class="text-xs text-slate-500">银行监管专户可用结算资金</div>
+              <div class="text-2xl font-bold text-emerald-600 mt-1">¥184,000.00</div>
+              <div class="text-xs text-slate-400 mt-1">招商银行成都分行对公托管</div>
+            </div>
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+              <div class="text-xs text-slate-500">人社财政补贴待到账金额</div>
+              <div class="text-2xl font-bold text-sky-600 mt-1">¥450,000.00</div>
+              <div class="text-xs text-slate-400 mt-1">人社部门审核公示中 (预计3个工作日)</div>
+            </div>
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+              <div class="text-xs text-slate-500">累计向平台支付招生技术佣金</div>
+              <div class="text-2xl font-bold text-slate-700 mt-1">¥76,800.00</div>
+              <div class="text-xs text-slate-400 mt-1">综合佣金率 20%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: CAAC Certificate Upload -->
+  <div v-if="showCaacModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-lg text-slate-900">回传学员 CAAC 执照信息</h3>
+        <i class="fa-solid fa-xmark text-slate-400 hover:text-slate-700 cursor-pointer" @click="showCaacModal = false"></i>
+      </div>
+
+      <div class="space-y-3 text-sm">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">学员姓名</label>
+          <input type="text" value="李大伟" class="w-full border rounded-lg p-2 bg-slate-50" readonly>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">中国民航局 CAAC 执照编号 *</label>
+          <input type="text" v-model="certUploadForm.licenseNo" placeholder="例如：CAAC-UAV-2026081029" class="w-full border rounded-lg p-2 font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">执照等级类别 *</label>
+          <select class="w-full border rounded-lg p-2">
+            <option>多旋翼 · 超视距驾驶员 (EVLOS)</option>
+            <option>多旋翼 · 视距内驾驶员 (VLOS)</option>
+            <option>垂直起降固定翼 · 超视距驾驶员</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">电子执照截图 / PDF 凭证 *</label>
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center cursor-pointer hover:border-sky-500 bg-slate-50" @click="showToast('已模拟上传民航电子执照证书文件')">
+            <i class="fa-solid fa-cloud-arrow-up text-2xl text-sky-500 mb-1"></i>
+            <div class="text-xs text-slate-500">点击上传民航局出具的电子执照 PNG / PDF</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 text-amber-800 text-xs p-3 rounded-lg border border-amber-200">
+        <i class="fa-solid fa-circle-info"></i> 学费已在学员报名时完成「报名即分账」结算;回传执照并与 UOM 校验通过后,将为学员点亮平台接单权限,并自动归集材料申报人社证书补贴(约 ¥2,500)。
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button class="px-4 py-2 border rounded-lg text-sm text-slate-600" @click="showCaacModal = false">取消</button>
+        <button class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-sm font-bold shadow" @click="confirmCertUpload">确认回传并解锁接单权限</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const { createApp, ref } = Vue;
+
+  createApp({
+    setup() {
+      const currentNav = ref('subsidy');
+      const showCaacModal = ref(false);
+
+      const navTitles = {
+        dashboard: '教务总览看板',
+        attendance: '人脸打卡与学时考勤流水',
+        subsidy: '人社补贴“五位一体”申报中心',
+        caac: 'CAAC排考·执照回传与补贴申报',
+        finance: '资金监管与对公结算'
+      };
+
+      const certUploadForm = ref({
+        licenseNo: 'CAAC-UAV-2026081029'
+      });
+
+      const studentList = ref([
+        { id: 1, name: '张小龙', idCard: '5101041995****1211', course: '无人机农业植保班', theoryHours: 8, flightHours: 16, rate: 100, subsidyType: '农村转移劳动力' },
+        { id: 2, name: '陈志远', idCard: '5101221998****4432', course: '无人机农业植保班', theoryHours: 8, flightHours: 16, rate: 100, subsidyType: '高校应届毕业生' },
+        { id: 3, name: '王利民', idCard: '5101071988****981X', course: '电力巡检实操班', theoryHours: 8, flightHours: 14, rate: 92, subsidyType: '城镇登记失业人员' }
+      ]);
+
+      const caacList = ref([
+        { id: 1, name: '王建军', level: '多旋翼 · 超视距', fee: 8800, theoryScore: 92, flightScore: 88, isCertified: true, licenseNo: 'CAAC-UAV-2026089912' },
+        { id: 2, name: '李大伟', level: '多旋翼 · 超视距', fee: 8000, theoryScore: 86, flightScore: 90, isCertified: false, licenseNo: '' },
+        { id: 3, name: '周海洋', level: '多旋翼 · 视距内', fee: 5800, theoryScore: 94, flightScore: 95, isCertified: true, licenseNo: 'CAAC-UAV-2026087711' }
+      ]);
+
+      const showToast = (msg) => {
+        alert(msg);
+      };
+
+      const submitBatchSubsidy = () => {
+        alert('【五位一体直报成功】已向成都市人社局专窗推送 40 名合格学员完整电子档案与音视频存证哈希包，补贴金额 ¥160,000 正在审核！');
+      };
+
+      const openCertUpload = (caac) => {
+        showCaacModal.value = true;
+      };
+
+      const confirmCertUpload = () => {
+        showCaacModal.value = false;
+        caacList.value[1].isCertified = true;
+        caacList.value[1].licenseNo = certUploadForm.value.licenseNo;
+        alert('证书回传 UOM 校验通过！已为学员点亮商业接单权限,并已自动归集材料向人社部门申报 CAAC 证书补贴 ¥2,500!');
+      };
+
+      return {
+        currentNav,
+        navTitles,
+        showCaacModal,
+        studentList,
+        caacList,
+        certUploadForm,
+        showToast,
+        submitBatchSubsidy,
+        openCertUpload,
+        confirmCertUpload
+      };
+    }
+  }).mount('#app');
+</script>
+
+</body>
+</html>

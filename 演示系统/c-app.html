@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>毕数飞行平台 - C端微信小程序演示</title>
+  <!-- Vue 3 & Font Awesome & Outfit(数字展示字体,演示层扩展) -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* ===== 规范 token(与 UI 设计规范 v1.0 一致) ===== */
+      --brand-primary: #1677FF;
+      --brand-primary-deep: #0958D9;
+      --brand-gradient: linear-gradient(135deg, #1677FF 0%, #00C2FF 100%);
+      --brand-accent: #FF7A00;
+      --brand-accent-deep: #E66A00;
+      --brand-teal: #00B578;
+
+      --color-success: #00B578;
+      --color-warning: #FF8F1F;
+      --color-danger: #FA5151;
+      --color-info: #1677FF;
+
+      --text-primary: #1A1A1A;
+      --text-secondary: #595959;
+      --text-tertiary: #8C8C8C;
+      --text-disabled: #BFBFBF;
+      --border: #E5E6EB;
+      --divider: #F0F1F5;
+      --bg-page: #F5F6F8;
+      --bg-card: #FFFFFF;
+
+      --space-1: 4px; --space-2: 8px; --space-3: 12px;
+      --space-4: 16px; --space-5: 20px; --space-6: 24px;
+
+      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+      --radius-xl: 16px; --radius-full: 999px;
+
+      /* ===== 演示层扩展 token(附录 A) ===== */
+      --sky-mesh:
+        radial-gradient(120% 90% at 85% -10%, #69B4FF 0%, transparent 55%),
+        radial-gradient(90% 70% at 8% 0%, rgba(0,194,255,.35) 0%, transparent 50%),
+        linear-gradient(160deg, #0958D9 0%, #1677FF 55%, #3D9BFF 100%);
+      --teal-mesh:
+        radial-gradient(110% 80% at 88% -8%, #5FE3B3 0%, transparent 55%),
+        linear-gradient(150deg, #00875A 0%, #00B578 60%, #1FC98C 100%);
+      --navy-mesh:
+        radial-gradient(110% 85% at 85% -10%, #4E7FD9 0%, transparent 55%),
+        linear-gradient(155deg, #14295C 0%, #1F3B7A 55%, #2B56A8 100%);
+      --elev-1: 0 1px 2px rgba(15,42,90,.04), 0 4px 14px rgba(15,42,90,.06);
+      --elev-2: 0 6px 20px rgba(15,42,90,.10);
+      --elev-3: 0 12px 32px rgba(15,42,90,.14);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      --contours: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='375' height='230' viewBox='0 0 375 230'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.10'%3E%3Cpath d='M-40 186 Q 90 122 190 162 T 420 142'/%3E%3Cpath d='M-40 206 Q 100 144 200 184 T 420 164'/%3E%3Cellipse cx='305' cy='26' rx='92' ry='40'/%3E%3Cellipse cx='305' cy='26' rx='142' ry='64'/%3E%3C/g%3E%3Cpath d='M16 64 Q 120 22 222 52 T 384 30' fill='none' stroke='%23ffffff' stroke-opacity='0.28' stroke-dasharray='2 7' stroke-linecap='round'/%3E%3Ccircle cx='222' cy='52' r='3' fill='%23ffffff' fill-opacity='0.55'/%3E%3Ccircle cx='16' cy='64' r='3' fill='%23ffffff' fill-opacity='0.35'/%3E%3C/svg%3E");
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(1100px 720px at 18% -10%, #1D3357 0%, transparent 60%),
+        radial-gradient(900px 640px at 112% 108%, #12305A 0%, transparent 55%),
+        linear-gradient(180deg, #0A1526 0%, #0F1D33 100%);
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-primary);
+      padding: 20px;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: var(--noise);
+      opacity: .5;
+      pointer-events: none;
+    }
+
+    /* ===== 演示舞台 / 手机壳 ===== */
+    .demo-wrapper { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .demo-header-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 375px; color: #8FA6C8; font-size: 13px; letter-spacing: .02em;
+    }
+    .demo-header-bar a {
+      color: #7CC4FF; text-decoration: none; display: flex; align-items: center; gap: 4px;
+      transition: color .2s;
+    }
+    .demo-header-bar a:hover { color: #B5DCFF; }
+
+    .phone-container {
+      width: 375px; height: 812px;
+      background-color: var(--bg-page);
+      border-radius: 46px;
+      box-shadow:
+        0 40px 90px rgba(2, 8, 20, .62),
+        0 0 0 10px #141D2A,
+        0 0 0 12px #33415A;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+
+    /* ===== iOS 状态栏(叠加于内容之上) ===== */
+    .status-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 44px; padding: 12px 24px 0;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 14px; font-weight: 600; color: #fff;
+      z-index: 60; pointer-events: none;
+      font-variant-numeric: tabular-nums;
+    }
+    .status-bar.dark-text { color: var(--text-primary); }
+    .status-bar-icons { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+
+    /* ===== 主滚动区 ===== */
+    .app-content {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding-bottom: 84px; position: relative;
+      scroll-behavior: smooth;
+    }
+    .app-content::-webkit-scrollbar { display: none; }
+    .tab-pane { animation: pane-in .3s var(--ease); }
+    @keyframes pane-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; animation: rise .55s var(--ease) forwards; animation-delay: var(--d, 0ms); }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 底部 TabBar ===== */
+    .tab-bar {
+      position: absolute; bottom: 0; left: 0; width: 100%; height: 66px;
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(229, 230, 235, .85);
+      display: flex; justify-content: space-around; align-items: center;
+      z-index: 40; padding-bottom: 10px;
+    }
+    .tab-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 10px; color: var(--text-tertiary);
+      cursor: pointer; flex: 1; position: relative;
+      transition: color .2s;
+    }
+    .tab-item i { font-size: 18px; transition: transform .25s var(--ease); }
+    .tab-item.active { color: var(--brand-primary); font-weight: 600; }
+    .tab-item.active i { transform: translateY(-1px); }
+    .tab-item.active::before {
+      content: ''; position: absolute; top: -9px; width: 18px; height: 3px;
+      border-radius: 2px; background: var(--brand-gradient);
+    }
+    .tab-badge {
+      position: absolute; top: 2px; right: 22px;
+      width: 8px; height: 8px;
+      background: var(--color-danger); border-radius: 50%;
+      box-shadow: 0 0 0 2px #fff;
+    }
+
+    /* ===== 基础组件 ===== */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin: 0 var(--space-4) var(--space-3);
+      box-shadow: var(--elev-1);
+    }
+    .card.lift { transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+    @media (hover: hover) {
+      .card.lift:hover { transform: translateY(-2px); box-shadow: var(--elev-2); }
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 11px; padding: 2px 8px;
+      border-radius: 6px; font-weight: 500; white-space: nowrap;
+    }
+    .badge-primary { background: rgba(22,119,255,.1); color: var(--brand-primary); }
+    .badge-success { background: rgba(0,181,120,.1); color: var(--color-success); }
+    .badge-warning { background: rgba(255,143,31,.12); color: #D96A00; }
+    .badge-danger  { background: rgba(250,81,81,.1); color: var(--color-danger); }
+    .badge-default { background: var(--divider); color: var(--text-secondary); }
+    .badge-gold {
+      background: linear-gradient(135deg, #FFE8B8, #F7BA48);
+      color: #6D4C00; font-weight: 600;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
+    }
+
+    .num { font-family: 'Outfit', -apple-system, "PingFang SC", sans-serif; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+
+    .btn {
+      display: inline-flex; justify-content: center; align-items: center; gap: 6px;
+      border-radius: var(--radius-full);
+      font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer;
+      transition: transform .15s var(--ease), box-shadow .2s, opacity .2s, background .2s;
+      padding: 10px 18px; text-decoration: none;
+    }
+    .btn:active { transform: scale(.96); }
+    .btn-primary {
+      background: linear-gradient(135deg, #1677FF 0%, #00A6FF 100%);
+      color: #fff;
+      box-shadow: 0 6px 14px rgba(22,119,255,.32), inset 0 1px 0 rgba(255,255,255,.28);
+    }
+    .btn-primary:active { box-shadow: 0 2px 8px rgba(22,119,255,.28); }
+    .btn-accent {
+      background: linear-gradient(135deg, #FF9433 0%, #FF7A00 55%, #F56A00 100%);
+      color: #fff;
+      box-shadow: 0 6px 14px rgba(255,122,0,.32), inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    .btn-accent:active { box-shadow: 0 2px 8px rgba(255,122,0,.28); }
+    .btn-secondary {
+      background: #fff; color: var(--brand-primary);
+      border: 1px solid rgba(22,119,255,.55);
+    }
+    .btn-sm { padding: 6px 13px; font-size: 12px; }
+    .btn-block { width: 100%; height: 46px; font-size: 15px; }
+    .btn-disabled {
+      background: var(--divider) !important;
+      color: var(--text-disabled) !important;
+      cursor: not-allowed; box-shadow: none !important;
+    }
+
+    .section-head {
+      padding: 2px 16px 10px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .section-title {
+      font-size: 16px; font-weight: 700; color: var(--text-primary);
+      display: flex; align-items: center; gap: 8px; letter-spacing: .01em;
+    }
+    .section-title::before {
+      content: ''; width: 4px; height: 15px; border-radius: 2px;
+      background: var(--brand-gradient);
+      box-shadow: 0 2px 6px rgba(22,119,255,.4);
+    }
+    .section-link { font-size: 12px; color: var(--brand-primary); cursor: pointer; font-weight: 500; }
+
+    /* ===== 顶部吸顶条 / 分段切换 ===== */
+    .sticky-bar {
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(12px);
+      padding: 52px 16px 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 20;
+    }
+    .seg {
+      display: flex; background: var(--bg-page);
+      border-radius: var(--radius-full); padding: 3px;
+      border: 1px solid rgba(229,230,235,.7);
+    }
+    .seg-item {
+      padding: 5px 16px; font-size: 13px; border-radius: var(--radius-full);
+      cursor: pointer; color: var(--text-secondary);
+      transition: all .25s var(--ease); white-space: nowrap;
+    }
+    .seg-item.on {
+      background: #fff; color: var(--brand-primary); font-weight: 600;
+      box-shadow: 0 2px 8px rgba(15,42,90,.12);
+    }
+    .seg.fill .seg-item { flex: 1; text-align: center; }
+    .filter-icon { color: var(--text-secondary); cursor: pointer; padding: 6px; }
+
+    .chip-row {
+      display: flex; gap: 8px; padding: 12px 16px 10px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .chip-row::-webkit-scrollbar { display: none; }
+    .chip {
+      padding: 6px 14px; font-size: 12px; border-radius: var(--radius-full);
+      background: #fff; border: 1px solid var(--border);
+      color: var(--text-secondary); cursor: pointer; white-space: nowrap;
+      transition: all .2s var(--ease);
+    }
+    .chip.on {
+      background: var(--brand-primary); border-color: transparent; color: #fff;
+      font-weight: 600; box-shadow: 0 4px 10px rgba(22,119,255,.3);
+    }
+
+    /* ===== 首页头图(云端晴空) ===== */
+    .home-hero {
+      position: relative; overflow: hidden;
+      background: var(--sky-mesh);
+      padding: 52px 16px 44px;
+      color: #fff;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
+    }
+    .home-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--contours) center/cover no-repeat;
+      pointer-events: none;
+    }
+    .home-hero::after {
+      content: ''; position: absolute; inset: 0;
+      background: var(--noise); opacity: .6;
+      mix-blend-mode: overlay; pointer-events: none;
+    }
+    .home-hero > * { position: relative; z-index: 2; }
+    .hh-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
+    }
+    .city-picker {
+      font-size: 14px; font-weight: 600; display: flex; align-items: center;
+      gap: 5px; cursor: pointer; letter-spacing: .02em;
+    }
+    .city-picker .fa-angle-down { font-size: 10px; opacity: .8; }
+    .hh-bell { font-size: 16px; cursor: pointer; opacity: .95; }
+    .hh-brand {
+      font-size: 10px; letter-spacing: .22em; font-weight: 600;
+      color: rgba(255,255,255,.72); text-transform: uppercase;
+      margin-bottom: 10px; font-family: 'Outfit', sans-serif;
+    }
+    .glass-search {
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.28);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-full);
+      padding: 9px 15px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: rgba(255,255,255,.92);
+      cursor: pointer; margin-bottom: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+    }
+    .role-switcher {
+      display: flex; width: 100%;
+      background: rgba(8,30,70,.28);
+      border: 1px solid rgba(255,255,255,.2);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-full); padding: 3px;
+    }
+    .role-btn {
+      flex: 1; text-align: center; padding: 6px 0;
+      font-size: 12px; font-weight: 500;
+      border-radius: var(--radius-full); cursor: pointer;
+      color: rgba(255,255,255,.85);
+      transition: all .25s var(--ease);
+    }
+    .role-btn.active {
+      background: #fff; color: var(--brand-primary-deep); font-weight: 600;
+      box-shadow: 0 3px 10px rgba(3,20,50,.28);
+    }
+
+    /* ===== 待办浮卡 ===== */
+    .todo-card {
+      background: #fff; border-radius: var(--radius-xl);
+      padding: 14px 16px 14px 18px;
+      margin: -30px 16px 12px;
+      box-shadow: var(--elev-2);
+      position: relative; z-index: 10; overflow: hidden;
+    }
+    .todo-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: var(--brand-gradient);
+    }
+    .todo-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .todo-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .todo-title i { color: var(--brand-accent); margin-right: 4px; }
+    .todo-body { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+    .todo-foot { margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .todo-hint { font-size: 11px; display: inline-flex; align-items: center; gap: 4px; }
+    .todo-hint.warn { color: #D96A00; }
+    .todo-hint.info { color: var(--brand-primary); }
+    .todo-hint.ok { color: var(--color-success); }
+
+    /* ===== 金刚区 ===== */
+    .grid-card { padding: 14px 8px 8px; }
+    .grid-menu {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 14px 6px;
+    }
+    .grid-item {
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      cursor: pointer; text-align: center;
+    }
+    .grid-icon {
+      width: 48px; height: 48px; border-radius: 16px;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 20px;
+      background: linear-gradient(145deg, var(--tile-a), var(--tile-b));
+      color: var(--tile-fg);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.65), 0 4px 10px rgba(15,42,90,.07);
+      transition: transform .2s var(--ease);
+    }
+    .grid-item:active .grid-icon { transform: scale(.9); }
+    .grid-item span { font-size: 12px; color: var(--text-secondary); }
+
+    /* ===== Banner ===== */
+    .banner-card {
+      margin: 0 16px 14px; border-radius: var(--radius-lg);
+      background: var(--navy-mesh);
+      color: #fff; padding: 16px; cursor: pointer;
+      position: relative; overflow: hidden;
+      box-shadow: var(--elev-2);
+      transition: transform .25s var(--ease);
+    }
+    .banner-card:active { transform: scale(.98); }
+    .banner-card::before {
+      content: ''; position: absolute; inset: 0; background: var(--noise); opacity: .5; pointer-events: none;
+    }
+    .banner-kicker { font-size: 11px; color: #9FC4FF; font-weight: 500; letter-spacing: .06em; }
+    .banner-title { font-size: 16px; font-weight: 700; margin: 5px 0 3px; letter-spacing: .01em; }
+    .banner-sub { font-size: 11px; opacity: .85; }
+    .banner-sub b { color: #FFD591; font-family: 'Outfit', sans-serif; }
+
+    /* ===== 订单卡片 ===== */
+    .order-card { cursor: pointer; }
+    .oc-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 10px; margin-bottom: 8px;
+    }
+    .oc-title { font-size: 15px; font-weight: 700; color: var(--text-primary); line-height: 1.4; letter-spacing: .01em; }
+    .oc-price {
+      font-size: 19px; font-weight: 700; color: var(--brand-accent);
+      white-space: nowrap; line-height: 1.2;
+    }
+    .oc-price .cur { font-size: 13px; margin-right: 1px; }
+    .oc-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .oc-info { font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+    .oc-info i { color: var(--text-tertiary); width: 15px; font-size: 11px; }
+    .oc-foot {
+      border-top: 1px dashed var(--border);
+      margin-top: 10px; padding-top: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .oc-note { font-size: 11px; color: var(--text-tertiary); display: inline-flex; align-items: center; gap: 4px; }
+    .oc-note i { color: var(--brand-teal); }
+
+    /* ===== 发布需求表单 ===== */
+    .publish-wrap { padding: 14px 16px; }
+    .form-card { margin: 0; }
+    .form-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: var(--text-primary); }
+    .field { margin-bottom: 14px; }
+    .field-label { font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 7px; font-weight: 500; }
+    .field-label b { color: var(--color-danger); font-weight: 600; }
+    .chip-row.in-form { padding: 0; flex-wrap: wrap; }
+    .form-input {
+      width: 100%; height: 44px;
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0 12px; font-size: 14px; outline: none;
+      background: #fff; color: var(--text-primary);
+      transition: border-color .2s, box-shadow .2s;
+      font-family: inherit;
+    }
+    .form-input:focus {
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(22,119,255,.12);
+    }
+    .form-input.price-input { font-weight: 700; color: var(--brand-accent); font-family: 'Outfit', "PingFang SC", sans-serif; font-size: 16px; }
+    .loc-row { display: flex; gap: 8px; }
+    .loc-row .form-input { flex: 1; }
+    .loc-row .btn { flex-shrink: 0; height: 44px; border-radius: 10px; }
+    .airspace-box {
+      background: linear-gradient(180deg, #F0F7FF, #F7FBFF);
+      border: 1px dashed rgba(22,119,255,.45);
+      border-radius: var(--radius-lg);
+      padding: 11px 13px; margin-bottom: 14px; font-size: 12px;
+    }
+    .airspace-title { font-weight: 600; color: var(--brand-primary); margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+    .airspace-body { color: var(--text-secondary); line-height: 1.55; }
+    .airspace-body strong { color: var(--text-primary); }
+    .airspace-note { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+    /* ===== 学习中心 ===== */
+    .seg-center { justify-content: center; }
+    .seg-center .seg { width: 280px; }
+    .learn-hero {
+      border-radius: var(--radius-lg);
+      margin: 12px 16px 12px; padding: 16px;
+      color: #fff; position: relative; overflow: hidden;
+      box-shadow: var(--elev-2);
+    }
+    .learn-hero.green { background: var(--teal-mesh); }
+    .learn-hero.blue { background: var(--navy-mesh); }
+    .learn-hero::before {
+      content: ''; position: absolute; inset: 0; background: var(--noise); opacity: .5; pointer-events: none;
+    }
+    .learn-hero > * { position: relative; }
+    .lh-kicker { font-size: 11px; opacity: .85; letter-spacing: .05em; }
+    .lh-title { font-size: 17px; font-weight: 700; margin: 4px 0 3px; }
+    .lh-sub { font-size: 11px; opacity: .85; }
+    .lh-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 40px; opacity: .25; }
+
+    .course-cover {
+      width: 84px; height: 84px; border-radius: var(--radius-lg);
+      background: linear-gradient(150deg, var(--c1), var(--c2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px; color: #fff; flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 4px 10px rgba(15,42,90,.12);
+    }
+    .course-main { flex: 1; min-width: 0; }
+    .course-title { font-size: 15px; font-weight: 700; color: var(--text-primary); line-height: 1.35; }
+    .course-org { font-size: 12px; color: var(--text-secondary); margin: 4px 0 6px; }
+    .course-foot {
+      border-top: 1px dashed var(--border);
+      margin-top: 10px; padding-top: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .course-date { font-size: 12px; color: var(--text-tertiary); }
+
+    .caac-price { font-size: 19px; font-weight: 700; color: var(--brand-accent); text-align: right; }
+    .caac-price-note { font-size: 10px; color: var(--color-success); text-align: right; margin-top: 1px; }
+    .caac-title { font-size: 16px; font-weight: 700; color: var(--text-primary); line-height: 1.35; }
+    .caac-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* ===== 装备商城 ===== */
+    .mall-wrap { padding: 12px 16px; }
+    .guarantee-box {
+      background: rgba(0,181,120,.07);
+      border: 1px dashed rgba(0,181,120,.5);
+      border-radius: var(--radius-lg);
+      padding: 11px 13px; margin-bottom: 12px;
+    }
+    .guarantee-title { font-size: 12px; font-weight: 600; color: var(--color-success); margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
+    .guarantee-body { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+    .product-card { margin: 0 0 12px; cursor: pointer; }
+    .product-cover {
+      width: 90px; height: 90px; border-radius: var(--radius-lg);
+      background: linear-gradient(150deg, var(--c1), var(--c2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; color: #fff; flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 4px 10px rgba(15,42,90,.12);
+    }
+    .product-title { font-size: 15px; font-weight: 700; color: var(--text-primary); line-height: 1.35; }
+    .product-meta { font-size: 12px; color: var(--text-secondary); margin: 3px 0 6px; }
+    .product-price { font-size: 18px; font-weight: 700; color: var(--brand-accent); }
+    .product-price .cur { font-size: 12px; }
+    .price-del { font-size: 12px; color: var(--text-tertiary); text-decoration: line-through; font-weight: 400; margin-left: 4px; }
+    .product-foot {
+      border-top: 1px dashed var(--border);
+      margin-top: 10px; padding-top: 9px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .product-seller { font-size: 11px; color: var(--text-tertiary); }
+
+    /* ===== 我的 ===== */
+    .mine-hero {
+      position: relative; overflow: hidden;
+      background: var(--sky-mesh);
+      padding: 52px 16px 46px; color: #fff;
+      border-bottom-left-radius: 28px; border-bottom-right-radius: 28px;
+    }
+    .mine-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--contours) center/cover no-repeat; pointer-events: none;
+    }
+    .mine-hero::after {
+      content: ''; position: absolute; inset: 0;
+      background: var(--noise); opacity: .6; mix-blend-mode: overlay; pointer-events: none;
+    }
+    .mine-hero > * { position: relative; z-index: 2; }
+    .mine-row { display: flex; align-items: center; gap: 14px; }
+    .avatar-ring {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      border: 1.5px solid rgba(255,255,255,.55);
+      backdrop-filter: blur(6px);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(3,20,50,.25), inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    .mine-name { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 6px; letter-spacing: .01em; }
+    .mine-license { font-size: 12px; opacity: .88; margin-top: 3px; font-variant-numeric: tabular-nums; }
+    .mine-crew { font-size: 11px; opacity: .78; margin-top: 1px; }
+
+    .asset-card {
+      margin: -32px 16px 14px; position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 16px 12px;
+    }
+    .credit-ring {
+      width: 62px; height: 62px; border-radius: 50%;
+      background: conic-gradient(var(--brand-teal) 0 353deg, #E6F4EE 353deg 360deg);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,181,120,.22);
+    }
+    .credit-ring-inner {
+      width: 48px; height: 48px; border-radius: 50%; background: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+    .credit-ring-inner b { font-size: 18px; font-weight: 700; color: var(--brand-teal); font-family: 'Outfit', sans-serif; }
+    .credit-ring-inner span { font-size: 9px; color: var(--text-tertiary); margin-top: 2px; }
+    .asset-item { text-align: center; }
+    .asset-num { font-size: 19px; font-weight: 700; }
+    .asset-num.up { color: var(--brand-primary); }
+    .asset-num.plain { color: var(--text-primary); }
+    .asset-label { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+    .asset-sep { width: 1px; align-self: stretch; background: var(--divider); }
+
+    .qual-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary); }
+    .qual-list { display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+    .qual-row { display: flex; justify-content: space-between; align-items: center; }
+    .qual-name { display: flex; align-items: center; gap: 8px; color: var(--text-primary); }
+    .qual-name i { width: 20px; text-align: center; }
+    .qual-val { font-weight: 500; font-size: 12px; }
+    .qual-val.ok { color: var(--color-success); }
+    .qual-val.info { color: var(--brand-primary); font-variant-numeric: tabular-nums; }
+
+    .menu-list { padding: 2px 16px; }
+    .menu-row {
+      padding: 14px 0; display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; font-size: 14px; color: var(--text-primary);
+      border-bottom: 1px solid var(--divider);
+      transition: opacity .15s;
+    }
+    .menu-row:last-child { border-bottom: none; }
+    .menu-row:active { opacity: .6; }
+    .menu-row i.lead { width: 22px; margin-right: 2px; }
+    .menu-row .fa-angle-right { color: var(--text-tertiary); font-size: 12px; }
+
+    /* ===== 订单履约二级页 ===== */
+    .subpage-nav {
+      background: rgba(255,255,255,.96); backdrop-filter: blur(12px);
+      padding: 52px 16px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 30;
+    }
+    .subpage-back {
+      font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+      cursor: pointer; color: var(--text-primary);
+    }
+    .risk-banner {
+      background: linear-gradient(90deg, #FFF1F0, #FFF7F5);
+      border-left: 4px solid var(--color-danger);
+      padding: 11px 14px; font-size: 12px; color: #CF1322; line-height: 1.55;
+    }
+    .risk-banner strong { display: inline-flex; align-items: center; gap: 5px; }
+
+    .detail-price { font-size: 22px; font-weight: 700; color: var(--brand-accent); margin: 4px 0 10px; }
+    .detail-price .cur { font-size: 14px; }
+    .detail-price .price-note { font-size: 12px; color: var(--text-tertiary); font-weight: 400; font-family: -apple-system, "PingFang SC", sans-serif; }
+    .info-rows { font-size: 12px; color: var(--text-secondary); line-height: 1.9; }
+    .info-rows i { width: 16px; color: var(--text-tertiary); font-size: 11px; }
+    .phone-row {
+      margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .phone-note { font-size: 12px; color: var(--text-tertiary); display: inline-flex; gap: 5px; align-items: center; }
+
+    .uom-title { font-size: 14px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
+    .uom-title i { color: var(--brand-primary); }
+    .uom-sub { font-size: 11px; color: var(--text-tertiary); margin: 3px 0 14px; }
+
+    /* 步骤条(含进度连接线) */
+    .stepper { display: flex; align-items: flex-start; margin: 4px 0 18px; }
+    .step-node {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      font-size: 10.5px; color: var(--text-tertiary); width: 72px; flex-shrink: 0;
+      text-align: center;
+    }
+    .step-node span { white-space: nowrap; }
+    .step-circle {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #fff; border: 2px solid var(--border);
+      display: flex; justify-content: center; align-items: center;
+      font-weight: 600; font-size: 12px; color: var(--text-secondary);
+      transition: all .3s var(--ease);
+      font-family: 'Outfit', sans-serif;
+    }
+    .step-node.completed .step-circle {
+      background: var(--color-success); border-color: var(--color-success); color: #fff;
+      box-shadow: 0 3px 8px rgba(0,181,120,.3);
+    }
+    .step-node.active .step-circle {
+      background: var(--brand-primary); border-color: var(--brand-primary); color: #fff;
+      animation: pulse-ring 2s infinite;
+    }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 3px rgba(22,119,255,.25); }
+      70% { box-shadow: 0 0 0 8px rgba(22,119,255,0); }
+      100% { box-shadow: 0 0 0 3px rgba(22,119,255,0); }
+    }
+    .step-node.completed span, .step-node.active span { color: var(--text-primary); font-weight: 600; }
+    .step-link { flex: 1; height: 2px; margin-top: 14px; background: var(--border); border-radius: 1px; position: relative; overflow: hidden; }
+    .step-link.done { background: var(--color-success); }
+
+    .step-box {
+      background: var(--bg-page); border-radius: var(--radius-lg);
+      padding: 12px; margin-bottom: 10px; font-size: 12px;
+      border: 1px solid rgba(229,230,235,.7);
+    }
+    .step-box:last-child { margin-bottom: 0; }
+    .step-box-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: 600; color: var(--text-primary); }
+
+    .ins-option {
+      display: flex; align-items: flex-start; gap: 9px; cursor: pointer;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; background: #fff;
+      transition: all .2s var(--ease);
+    }
+    .ins-option + .ins-option { margin-top: 8px; }
+    .ins-option.selected {
+      border-color: var(--brand-primary);
+      background: rgba(22,119,255,.05);
+      box-shadow: 0 2px 8px rgba(22,119,255,.1);
+    }
+    .ins-option input { margin-top: 3px; accent-color: var(--brand-primary); }
+    .ins-option strong { font-size: 12px; color: var(--text-primary); }
+    .ins-desc { color: var(--text-tertiary); font-size: 11px; margin-top: 2px; line-height: 1.45; }
+
+    .bottom-action { padding: 14px 16px 24px; }
+    .action-blocked {
+      text-align: center; font-size: 11px; color: var(--color-danger); margin-top: 7px;
+    }
+
+    /* ===== 客服悬浮按钮 ===== */
+    .contact-float-btn {
+      position: absolute; right: 14px; bottom: 82px;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, #1677FF, #00A6FF);
+      color: #fff; border: none; cursor: pointer;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      font-size: 17px;
+      box-shadow: 0 6px 18px rgba(22,119,255,.45), inset 0 1px 0 rgba(255,255,255,.3);
+      z-index: 45;
+      animation: pulse-kf 2.6s infinite;
+    }
+    .contact-float-btn span { font-size: 9px; margin-top: 1px; font-weight: 500; }
+    @keyframes pulse-kf {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    /* ===== 弹窗 / 抽屉 ===== */
+    .modal-overlay {
+      position: absolute; inset: 0;
+      background: rgba(10, 20, 40, .5);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex; justify-content: center; align-items: center;
+      padding: 20px;
+      animation: fade-in .2s;
+    }
+    @keyframes fade-in { from { opacity: 0; } }
+    .modal-box {
+      background: #fff; border-radius: 20px;
+      padding: 22px 20px; width: 100%;
+      max-height: 90%; overflow-y: auto;
+      box-shadow: var(--elev-3);
+      animation: pop-in .3s var(--ease);
+    }
+    @keyframes pop-in {
+      from { transform: scale(.92) translateY(8px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .modal-close { cursor: pointer; color: var(--text-tertiary); padding: 4px; }
+    .modal-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+
+    .gift-icon {
+      width: 58px; height: 58px; border-radius: 50%;
+      background: linear-gradient(145deg, #FFF3D6, #FFE3A8);
+      color: #D46B08; display: inline-flex; align-items: center; justify-content: center;
+      font-size: 26px; margin-bottom: 12px;
+      box-shadow: 0 6px 16px rgba(247,186,72,.35), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .voucher-box {
+      background: #F6FFED; border: 1px dashed #95D475;
+      padding: 10px; border-radius: var(--radius-md);
+      font-size: 12px; color: #389E0D; margin-bottom: 16px;
+    }
+
+    .check-meta { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.6; }
+    .check-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      background: var(--bg-page); padding: 9px 11px; border-radius: 8px;
+      font-size: 12px; color: var(--text-primary);
+    }
+    .check-row + .check-row { margin-top: 8px; }
+    .check-val { font-weight: 600; font-size: 11px; text-align: right; }
+    .check-val.ok { color: var(--color-success); }
+    .check-val.info { color: var(--brand-primary); }
+
+    /* ===== 微信客服抽屉 ===== */
+    .kf-sheet {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 520px;
+      background: #EDEDED;
+      border-top-left-radius: 20px; border-top-right-radius: 20px;
+      z-index: 120; display: flex; flex-direction: column; overflow: hidden;
+      animation: slide-up .32s var(--ease);
+      box-shadow: 0 -12px 40px rgba(0,0,0,.25);
+    }
+    @keyframes slide-up {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .kf-header {
+      background: #F7F7F7; padding: 14px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #E0E0E0; font-weight: 600; font-size: 15px;
+    }
+    .kf-body {
+      flex: 1; padding: 14px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 12px; font-size: 13px;
+    }
+    .kf-bubble-sys {
+      align-self: center; background: rgba(0,0,0,.06);
+      color: var(--text-secondary); font-size: 11px;
+      padding: 4px 10px; border-radius: 12px;
+    }
+    .kf-msg { display: flex; gap: 8px; max-width: 85%; }
+    .kf-msg.left { align-self: flex-start; }
+    .kf-msg.right { align-self: flex-end; flex-direction: row-reverse; }
+    .kf-avatar {
+      width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .kf-bubble { padding: 10px 12px; border-radius: 10px; line-height: 1.5; }
+    .kf-msg.left .kf-bubble { background: #fff; color: #111; border: 1px solid #E3E3E3; border-top-left-radius: 3px; }
+    .kf-msg.right .kf-bubble { background: #95EC69; color: #111; border-top-right-radius: 3px; }
+    .kf-quick-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 8px 12px; background: #F7F7F7; border-top: 1px solid #E0E0E0;
+    }
+    .kf-tag {
+      background: #fff; border: 1px solid #DCDCDC;
+      padding: 4px 10px; border-radius: 14px;
+      font-size: 11px; color: var(--brand-primary); cursor: pointer;
+      transition: all .15s;
+    }
+    .kf-tag:active { background: var(--brand-primary); color: #fff; }
+    .kf-footer { padding: 8px 12px; background: #F7F7F7; display: flex; gap: 8px; align-items: center; }
+    .kf-input {
+      flex: 1; height: 36px; border-radius: 8px;
+      border: 1px solid #DDD; background: #fff;
+      padding: 0 10px; font-size: 13px; outline: none;
+    }
+    .kf-input:focus { border-color: var(--brand-primary); }
+
+    /* ===== V3.0 补齐:紧凑六步维修进度条 ===== */
+    .stepper.compact { margin: 8px 0 14px; }
+    .stepper.compact .step-node { width: 42px; font-size: 8.5px; gap: 4px; }
+    .stepper.compact .step-circle { width: 20px; height: 20px; font-size: 9px; border-width: 1.5px; }
+    .stepper.compact .step-link { margin-top: 10px; }
+
+    .repair-photos { display: flex; gap: 8px; }
+    .repair-photo {
+      flex: 1; height: 64px; border-radius: var(--radius-md);
+      background: linear-gradient(150deg, var(--c1, #5B6B84), var(--c2, #8296B3));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 4px 10px rgba(15,42,90,.12);
+    }
+
+    /* ===== V3.0 补齐:CAAC 报名收银台 ===== */
+    .cashier-amount { text-align: center; padding: 4px 0 12px; }
+    .cashier-price {
+      font-size: 34px; font-weight: 700; color: var(--brand-accent);
+      font-family: 'Outfit', sans-serif; line-height: 1.2;
+    }
+    .cashier-price .cur { font-size: 18px; }
+    .pay-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--text-secondary); padding: 7px 2px;
+    }
+    .pay-row + .pay-row { border-top: 1px dashed var(--border); }
+    .pay-row b { color: var(--text-primary); font-weight: 600; text-align: right; }
+    .refund-table {
+      background: var(--bg-page); border-radius: var(--radius-md);
+      padding: 10px 12px; font-size: 11px; color: var(--text-secondary);
+    }
+    .refund-row { display: flex; justify-content: space-between; padding: 3.5px 0; }
+    .refund-row b { font-weight: 600; color: var(--text-primary); }
+    .agree-row {
+      display: flex; align-items: flex-start; gap: 7px;
+      font-size: 11px; color: var(--text-secondary);
+      margin: 13px 0; cursor: pointer; line-height: 1.55;
+    }
+    .agree-row input { accent-color: var(--brand-primary); margin-top: 1px; }
+
+    /* ===== V3.0 补齐:需求方选飞手 ===== */
+    .pilot-card.chosen { outline: 2px solid rgba(22,119,255,.55); outline-offset: -2px; }
+    .pilot-head { display: flex; align-items: center; gap: 10px; }
+    .pilot-avatar {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(145deg, var(--c1, #1677FF), var(--c2, #69B4FF));
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 4px 10px rgba(15,42,90,.15);
+    }
+    .pilot-info { flex: 1; min-width: 0; }
+    .pilot-name { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .pilot-quote { font-size: 18px; font-weight: 700; color: var(--brand-accent); white-space: nowrap; }
+    .pilot-quote span { font-size: 11px; }
+    .pilot-stats {
+      display: flex; margin-top: 10px;
+      background: var(--bg-page); border-radius: var(--radius-md); padding: 8px 0;
+    }
+    .pilot-stat { flex: 1; text-align: center; }
+    .pilot-stat + .pilot-stat { border-left: 1px solid var(--divider); }
+    .pilot-stat b {
+      display: block; font-size: 14px; font-weight: 700;
+      color: var(--text-primary); font-family: 'Outfit', sans-serif;
+    }
+    .pilot-stat span { font-size: 10px; color: var(--text-tertiary); }
+
+    /* ===== V3.0 补齐:订单 IM 风控提示气泡 ===== */
+    .kf-risk-tip {
+      background: #FFF1F0; border: 1px solid #FFCCC7; color: #CF1322;
+      border-radius: 10px; padding: 9px 12px; font-size: 11px; line-height: 1.6;
+      display: flex; gap: 7px; align-items: flex-start;
+    }
+    .kf-risk-tip i { margin-top: 1px; }
+
+    /* ===== V3.0 补齐:电子合同条款高亮 ===== */
+    .contract-clause {
+      background: #FFFBE6; border: 1px dashed #F7BA48;
+      border-radius: var(--radius-md); padding: 10px 12px;
+      font-size: 11px; color: #6D4C00; line-height: 1.65; margin-bottom: 6px;
+    }
+    .contract-clause strong { color: #D46B08; }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+      max-width: 86%;
+      background: rgba(18, 26, 40, .88);
+      backdrop-filter: blur(8px);
+      color: #fff; padding: 9px 16px;
+      border-radius: var(--radius-full);
+      font-size: 12px; z-index: 150;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.3);
+      animation: toast-in .25s var(--ease);
+      line-height: 1.4;
+    }
+    .toast i { color: #7CE3B8; }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app" class="demo-wrapper">
+  <!-- Top Navigation Aid -->
+  <div class="demo-header-bar">
+    <div style="font-weight: 600;"><i class="fa-solid fa-mobile-screen"></i> 微信小程序 C端原型</div>
+    <a href="index.html"><i class="fa-solid fa-house"></i> 返回门户主页</a>
+  </div>
+
+  <!-- Mobile Phone Container -->
+  <div class="phone-container">
+
+    <!-- Status Bar (iOS) -->
+    <div class="status-bar" :class="{'dark-text': !(currentTab === 'home' || currentTab === 'mine') || currentSubPage}">
+      <span class="num">{{ currentTime }}</span>
+      <div class="status-bar-icons">
+        <i class="fa-solid fa-signal"></i>
+        <i class="fa-solid fa-wifi"></i>
+        <i class="fa-solid fa-battery-full"></i>
+      </div>
+    </div>
+
+    <!-- MAIN SCROLLABLE APP BODY -->
+    <div class="app-content">
+
+      <!-- ================= 1. 首页 TAB ================= -->
+      <div class="tab-pane" v-if="!currentSubPage && currentTab === 'home'">
+        <!-- 云端晴空 Hero -->
+        <div class="home-hero">
+          <div class="hh-top">
+            <div class="city-picker"><i class="fa-solid fa-location-dot"></i> 成都市 <i class="fa-solid fa-angle-down"></i></div>
+            <i class="fa-regular fa-bell hh-bell" @click="showToast('暂无新系统通知')"></i>
+          </div>
+          <div class="hh-brand">BISSU FLIGHT · 低空飞行服务生态</div>
+          <div class="glass-search" @click="currentTab = 'orders'">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>搜索航拍、电力巡检、植保订单或课程...</span>
+          </div>
+          <div class="role-switcher">
+            <div class="role-btn" :class="{active: userRole === 'pilot'}" @click="userRole = 'pilot'">我是飞手(接单)</div>
+            <div class="role-btn" :class="{active: userRole === 'client'}" @click="userRole = 'client'">我是客户(发单)</div>
+            <div class="role-btn" :class="{active: userRole === 'student'}" @click="userRole = 'student'">我是学员(培训)</div>
+          </div>
+        </div>
+
+        <!-- 角色化待办浮卡 -->
+        <div class="todo-card reveal" style="--d: 40ms;">
+          <div class="todo-head">
+            <span class="todo-title">
+              <i class="fa-solid fa-bolt"></i>
+              {{ userRole === 'pilot' ? '飞手任务待办' : (userRole === 'client' ? '用机需求管理' : '我的学业进度') }}
+            </span>
+            <span class="badge badge-warning" v-if="userRole === 'pilot'">待履约 1 笔</span>
+            <span class="badge badge-primary" v-else-if="userRole === 'student'">技能班在读</span>
+          </div>
+          <div class="todo-body" v-if="userRole === 'pilot'">
+            <div>今日待作业：<strong>成都市温江区 220kV 电力巡检</strong></div>
+            <div class="todo-foot">
+              <span class="todo-hint warn"><i class="fa-solid fa-triangle-exclamation"></i> 需在作业前回传 UOM 批文(保险已自动附加)</span>
+              <button class="btn btn-primary btn-sm" @click="openOrderDetail(currentActiveOrder)">进入履约</button>
+            </div>
+          </div>
+          <div class="todo-body" v-else-if="userRole === 'client'">
+            <div>发布中的需求：<strong>简阳市 500 亩水稻飞防植保</strong></div>
+            <div class="todo-foot">
+              <span class="todo-hint info">已有 3 位持证飞手申请接单</span>
+              <button class="btn btn-accent btn-sm" @click="openSelectPilot">查看匹配</button>
+            </div>
+          </div>
+          <div class="todo-body" v-else>
+            <div>已完成线下实操：<strong>16 / 20 学时 (80%)</strong></div>
+            <div class="todo-foot">
+              <span class="todo-hint ok"><i class="fa-solid fa-circle-check"></i> 人社补贴资格已锁定 (免学费)</span>
+              <button class="btn btn-primary btn-sm" @click="currentTab = 'learn'">继续打卡</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 金刚区 8 宫格 -->
+        <div class="card grid-card reveal" style="--d: 110ms;">
+          <div class="grid-menu">
+            <div class="grid-item" @click="currentTab = 'orders'">
+              <div class="grid-icon" style="--tile-a:#DCEAFF; --tile-b:#F2F8FF; --tile-fg:#1677FF;"><i class="fa-solid fa-satellite-dish"></i></div>
+              <span>接单广场</span>
+            </div>
+            <div class="grid-item" @click="currentTab = 'orders'; isPublishMode = true">
+              <div class="grid-icon" style="--tile-a:#FFE8CF; --tile-b:#FFF6EC; --tile-fg:#F56A00;"><i class="fa-solid fa-paper-plane"></i></div>
+              <span>发布需求</span>
+            </div>
+            <div class="grid-item" @click="currentTab = 'learn'; learnTab = 'caac'">
+              <div class="grid-icon" style="--tile-a:#FFF0C2; --tile-b:#FFFAE8; --tile-fg:#B27B00;"><i class="fa-solid fa-id-card"></i></div>
+              <span>CAAC考证</span>
+            </div>
+            <div class="grid-item" @click="currentTab = 'learn'; learnTab = 'skill'">
+              <div class="grid-icon" style="--tile-a:#CFF5E4; --tile-b:#EFFCF5; --tile-fg:#00A06B;"><i class="fa-solid fa-graduation-cap"></i></div>
+              <span>技能培训</span>
+            </div>
+            <div class="grid-item" @click="currentTab = 'mall'">
+              <div class="grid-icon" style="--tile-a:#E9DFFB; --tile-b:#F7F3FE; --tile-fg:#722ED1;"><i class="fa-solid fa-box-open"></i></div>
+              <span>装备商城</span>
+            </div>
+            <div class="grid-item" @click="openCheckReportModal">
+              <div class="grid-icon" style="--tile-a:#C9F2F2; --tile-b:#EBFBFB; --tile-fg:#0E9E9E;"><i class="fa-solid fa-shield-halved"></i></div>
+              <span>官方验机</span>
+            </div>
+            <div class="grid-item" @click="showRepairModal = true">
+              <div class="grid-icon" style="--tile-a:#FBDCEF; --tile-b:#FDF0F8; --tile-fg:#D62E8C;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+              <span>维修服务</span>
+            </div>
+            <div class="grid-item" @click="openKfModal">
+              <div class="grid-icon" style="--tile-a:#DCF5CE; --tile-b:#F2FBEA; --tile-fg:#46A018;"><i class="fa-brands fa-weixin"></i></div>
+              <span>在线客服</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 成长通道 Banner -->
+        <div class="banner-card reveal" style="--d: 180ms;" @click="showExamVoucherModal = true">
+          <div class="banner-kicker">学员专属成长通道</div>
+          <div class="banner-title">考取民航 CAAC 执照 · 解锁合规接单</div>
+          <div class="banner-sub">技能班结业立享 <b>¥800</b> 专属补贴券 <i class="fa-solid fa-arrow-right" style="font-size: 10px;"></i></div>
+        </div>
+
+        <!-- 推荐订单 -->
+        <div class="section-head reveal" style="--d: 240ms;">
+          <span class="section-title">推荐任务订单</span>
+          <span class="section-link" @click="currentTab = 'orders'">查看全部 (28) <i class="fa-solid fa-angle-right" style="font-size: 10px;"></i></span>
+        </div>
+
+        <div class="card order-card lift reveal" style="--d: 290ms;" @click="openOrderDetail(orderList[0])">
+          <div class="oc-head">
+            <div class="oc-title">成都市温江区 220kV 电力巡检</div>
+            <div class="oc-price num"><span class="cur">¥</span>3,500</div>
+          </div>
+          <div class="oc-badges">
+            <span class="badge badge-primary">电力巡检</span>
+            <span class="badge badge-danger"><i class="fa-solid fa-triangle-exclamation"></i> 管制空域(需批文)</span>
+            <span class="badge badge-gold">要求超视距执照</span>
+          </div>
+          <div class="oc-info">
+            <div><i class="fa-solid fa-location-dot"></i> 温江区万春镇 5基铁塔精细巡检</div>
+            <div><i class="fa-regular fa-clock"></i> 2026-08-28 09:00 开始</div>
+          </div>
+          <div class="oc-foot">
+            <span class="oc-note"><i class="fa-solid fa-shield-halved"></i> 平台资金托管 · 强制保险护航</span>
+            <button class="btn btn-accent btn-sm">查看抢单</button>
+          </div>
+        </div>
+
+        <div class="card order-card lift reveal" style="--d: 340ms;" @click="openOrderDetail(orderList[1])">
+          <div class="oc-head">
+            <div class="oc-title">崇州市 800亩 晚稻飞防农药喷洒</div>
+            <div class="oc-price num"><span class="cur">¥</span>6,400</div>
+          </div>
+          <div class="oc-badges">
+            <span class="badge badge-primary">农业植保</span>
+            <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> 适飞空域(真高≤120m)</span>
+            <span class="badge badge-primary">大疆T50/极飞P100</span>
+          </div>
+          <div class="oc-info">
+            <div><i class="fa-solid fa-location-dot"></i> 崇州市隆兴镇 现代农业示范区</div>
+            <div><i class="fa-regular fa-clock"></i> 2026-08-29 全天</div>
+          </div>
+          <div class="oc-foot">
+            <span class="oc-note"><i class="fa-solid fa-wheat-awn"></i> 农机合作社直发 · 对公发票</span>
+            <button class="btn btn-accent btn-sm">查看抢单</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 2. 接单广场 / 需求发布 TAB ================= -->
+      <div class="tab-pane" v-if="!currentSubPage && currentTab === 'orders'">
+        <div class="sticky-bar">
+          <div class="seg">
+            <div class="seg-item" :class="{on: !isPublishMode}" @click="isPublishMode = false">飞手接单广场</div>
+            <div class="seg-item" :class="{on: isPublishMode}" @click="isPublishMode = true">发布飞行需求</div>
+          </div>
+          <i class="fa-solid fa-sliders filter-icon" @click="showToast('筛选面板')"></i>
+        </div>
+
+        <!-- 2.1 飞手找单模式 -->
+        <div v-if="!isPublishMode">
+          <div class="chip-row">
+            <span class="chip" :class="{on: filterType === 'all'}" @click="filterType = 'all'">全部 (28)</span>
+            <span class="chip" :class="{on: filterType === '巡检'}" @click="filterType = '巡检'">电力/光伏巡检</span>
+            <span class="chip" :class="{on: filterType === '植保'}" @click="filterType = '植保'">农业植保</span>
+            <span class="chip" :class="{on: filterType === '测绘'}" @click="filterType = '测绘'">航拍与实景三维</span>
+          </div>
+
+          <div v-for="order in filteredOrders" :key="order.id" class="card order-card lift" @click="openOrderDetail(order)">
+            <div class="oc-head">
+              <div class="oc-title">{{ order.title }}</div>
+              <div class="oc-price num"><span class="cur">¥</span>{{ order.price.toLocaleString() }}</div>
+            </div>
+            <div class="oc-badges">
+              <span class="badge badge-primary">{{ order.type }}</span>
+              <span class="badge" :class="order.isControlled ? 'badge-danger' : 'badge-success'">
+                <i :class="order.isControlled ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-check'"></i>
+                {{ order.isControlled ? '管制空域(需UOM批文)' : '适飞空域(真高≤120m)' }}
+              </span>
+              <span class="badge badge-gold">{{ order.licenseReq }}</span>
+            </div>
+            <div class="oc-info">
+              <div><i class="fa-solid fa-location-dot"></i> {{ order.location }}</div>
+              <div><i class="fa-regular fa-clock"></i> {{ order.time }}</div>
+            </div>
+            <div class="oc-foot">
+              <span class="oc-note"><i class="fa-solid fa-building-shield"></i> 发包方：{{ order.publisher }} (信誉 100)</span>
+              <button class="btn btn-accent btn-sm" @click.stop="tryGrabOrder(order)">我要抢单</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.2 需求方发单模式 -->
+        <div v-else class="publish-wrap">
+          <div class="card form-card">
+            <div class="form-title">填写飞行需求基本信息</div>
+
+            <div class="field">
+              <label class="field-label">任务类型 <b>*</b></label>
+              <div class="chip-row in-form">
+                <span class="chip" :class="{on: publishForm.type === '航拍摄影'}" @click="publishForm.type = '航拍摄影'">航拍摄影</span>
+                <span class="chip" :class="{on: publishForm.type === '电力巡检'}" @click="publishForm.type = '电力巡检'">电力巡检</span>
+                <span class="chip" :class="{on: publishForm.type === '正射测绘'}" @click="publishForm.type = '正射测绘'">正射测绘</span>
+                <span class="chip" :class="{on: publishForm.type === '农业植保'}" @click="publishForm.type = '农业植保'">农业植保</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">作业地点 (地图选点) <b>*</b></label>
+              <div class="loc-row">
+                <input type="text" class="form-input" v-model="publishForm.location" placeholder="例如:成都市天府新区兴隆湖">
+                <button class="btn btn-secondary btn-sm" @click="simulateGisMap"><i class="fa-solid fa-map-pin"></i> 选点</button>
+              </div>
+            </div>
+
+            <!-- 智能空域预判 -->
+            <div class="airspace-box">
+              <div class="airspace-title"><i class="fa-solid fa-satellite"></i> 智能空域预判参考(UOM法规指引)</div>
+              <div class="airspace-body">
+                任务预估作业真高：<strong>≤ 80 米</strong><br>
+                空域属性初判：<span style="color: var(--color-success); font-weight: 600;">适飞空域(真高120米以下免报备申请)</span>
+                <div class="airspace-note">* 平台不替代UOM审批职能,飞手接单后需在UOM复核。</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">项目预算金额 (元) <b>*</b></label>
+              <input type="number" class="form-input price-input" v-model="publishForm.price" placeholder="请输入预算总额">
+            </div>
+
+            <button class="btn btn-primary btn-block" @click="submitPublishOrder"><i class="fa-solid fa-paper-plane"></i> 立即发布至订单广场</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3. 学习中心 (培训 + CAAC考证) TAB ================= -->
+      <div class="tab-pane" v-if="!currentSubPage && currentTab === 'learn'">
+        <div class="sticky-bar seg-center">
+          <div class="seg fill" style="width: 280px;">
+            <div class="seg-item" :class="{on: learnTab === 'skill'}" @click="learnTab = 'skill'">技能培训(人社补贴)</div>
+            <div class="seg-item" :class="{on: learnTab === 'caac'}" @click="learnTab = 'caac'">CAAC执照考证</div>
+          </div>
+        </div>
+
+        <!-- 3.1 技能培训专区 (零门槛免费学) -->
+        <div v-if="learnTab === 'skill'">
+          <div class="learn-hero green">
+            <div class="lh-kicker">国家职业技能普惠补贴政策</div>
+            <div class="lh-title">零费用学无人机技能 · 政府全额补贴</div>
+            <div class="lh-sub">五位一体全流程电子存证 · 颁发官方结业证书</div>
+            <i class="fa-solid fa-award lh-icon"></i>
+          </div>
+
+          <div class="card lift">
+            <div style="display: flex; gap: 12px;">
+              <div class="course-cover" style="--c1:#00B578; --c2:#5FE3B3;">
+                <i class="fa-solid fa-wheat-awn"></i>
+              </div>
+              <div class="course-main">
+                <div class="course-title">无人机农业植保飞防应用技能班</div>
+                <div class="course-org">定点机构：四川省无人机职业技能实训基地</div>
+                <div class="oc-badges" style="margin-bottom: 0;">
+                  <span class="badge badge-success">人社直补 ¥0</span>
+                  <span class="badge badge-primary">24总课时</span>
+                  <span class="badge badge-warning">实操打卡</span>
+                </div>
+              </div>
+            </div>
+            <div class="course-foot">
+              <span class="course-date">开班时间：08月30日</span>
+              <button class="btn btn-primary btn-sm" @click="openEnrollModal('无人机农业植保飞防应用技能班')">免费报名(资格秒查)</button>
+            </div>
+          </div>
+
+          <div class="card lift">
+            <div style="display: flex; gap: 12px;">
+              <div class="course-cover" style="--c1:#1677FF; --c2:#69B4FF;">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <div class="course-main">
+                <div class="course-title">电力架空线路巡检与热成像分析班</div>
+                <div class="course-org">定点机构：成都市通用航空职业技术学院</div>
+                <div class="oc-badges" style="margin-bottom: 0;">
+                  <span class="badge badge-success">人社直补 ¥0</span>
+                  <span class="badge badge-primary">32总课时</span>
+                </div>
+              </div>
+            </div>
+            <div class="course-foot">
+              <span class="course-date">开班时间：09月05日</span>
+              <button class="btn btn-primary btn-sm" @click="openEnrollModal('电力架空线路巡检与热成像分析班')">免费报名(资格秒查)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3.2 CAAC考证专区 (商业接单刚需) -->
+        <div v-else>
+          <div class="learn-hero blue">
+            <div class="lh-kicker">中国民用航空局 (CAAC) 官方执照</div>
+            <div class="lh-title">民用无人驾驶航空器操控员执照班</div>
+            <div class="lh-sub">持证即可在平台抢接高薪商业订单 · 可申请人社证书补贴 ¥1,500~5,000</div>
+            <i class="fa-solid fa-id-card lh-icon"></i>
+          </div>
+
+          <div class="card lift">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+              <div>
+                <span class="badge badge-gold" style="margin-bottom: 5px;">多旋翼 · 超视距驾驶员 (推荐)</span>
+                <div class="caac-title">CAAC 超视距驾驶员(中型/小型)考证班</div>
+                <div class="caac-sub">民航局授权培训基地 · 考官驻点考场</div>
+                <div class="oc-badges" style="margin-top: 6px; margin-bottom: 0;">
+                  <span class="badge badge-success">人社证书补贴 ¥2,000~3,000</span>
+                </div>
+              </div>
+              <div style="flex-shrink: 0;">
+                <div class="caac-price num"><span style="font-size: 13px;">¥</span>8,800</div>
+                <div class="caac-price-note">已享学员券 -¥800</div>
+              </div>
+            </div>
+            <div class="course-foot">
+              <span class="oc-note"><i class="fa-solid fa-shield-halved"></i> 资金监管 · 报名即分账</span>
+              <button class="btn btn-accent btn-sm" @click="openCaacPayModal('CAAC 超视距驾驶员考证班', 8800)">立即报名缴费</button>
+            </div>
+          </div>
+
+          <div class="card lift">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+              <div>
+                <span class="badge badge-primary" style="margin-bottom: 5px;">多旋翼 · 视距内驾驶员</span>
+                <div class="caac-title">CAAC 视距内驾驶员基础考证班</div>
+                <div class="caac-sub">航拍/植保入门首选 · 周期15天</div>
+                <div class="oc-badges" style="margin-top: 6px; margin-bottom: 0;">
+                  <span class="badge badge-success">人社证书补贴 ¥1,500~2,000</span>
+                </div>
+              </div>
+              <div style="flex-shrink: 0;">
+                <div class="caac-price num"><span style="font-size: 13px;">¥</span>5,800</div>
+              </div>
+            </div>
+            <div class="course-foot">
+              <span class="oc-note"><i class="fa-solid fa-shield-halved"></i> 资金监管 · 首考未过免费重培</span>
+              <button class="btn btn-accent btn-sm" @click="openCaacPayModal('CAAC 视距内驾驶员基础考证班', 5800)">立即报名缴费</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 4. 装备商城 TAB ================= -->
+      <div class="tab-pane" v-if="!currentSubPage && currentTab === 'mall'">
+        <div class="sticky-bar seg-center">
+          <div class="seg fill" style="width: 100%;">
+            <div class="seg-item" :class="{on: mallTab === 'secondhand'}" @click="mallTab = 'secondhand'">闲置二手专区(42项验机)</div>
+            <div class="seg-item" :class="{on: mallTab === 'new'}" @click="mallTab = 'new'">全新官方整机与配件</div>
+          </div>
+        </div>
+
+        <!-- 二手专区 -->
+        <div v-if="mallTab === 'secondhand'" class="mall-wrap">
+          <div class="guarantee-box">
+            <div class="guarantee-title"><i class="fa-solid fa-shield-halved"></i> 毕数官方二手安全交易保障</div>
+            <div class="guarantee-body">强制输入机身 SN 码防盗抢赃机 · 42项专业物理与日志验机 · UOM权属过户指引</div>
+          </div>
+
+          <div class="card product-card lift" @click="openCheckReportModal">
+            <div style="display: flex; gap: 12px;">
+              <div class="product-cover" style="--c1:#1677FF; --c2:#69B4FF;">
+                <i class="fa-solid fa-helicopter"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div class="product-title">【95新】大疆 DJI Mavic 3E 行业测绘无人机</div>
+                <div class="product-meta">飞行总时长 32小时 · 电池循环 18次</div>
+                <div class="oc-badges">
+                  <span class="badge badge-success"><i class="fa-solid fa-check"></i> 官方已验机</span>
+                  <span class="badge badge-primary">SN已核验</span>
+                </div>
+                <div class="product-price num"><span class="cur">¥</span>18,500<span class="price-del">¥24,999</span></div>
+              </div>
+            </div>
+            <div class="product-foot">
+              <span class="product-seller">卖家：成都某测绘工作室 (实名)</span>
+              <button class="btn btn-secondary btn-sm" @click.stop="openCheckReportModal">查看42项验机报告</button>
+            </div>
+          </div>
+
+          <div class="card product-card lift">
+            <div style="display: flex; gap: 12px;">
+              <div class="product-cover" style="--c1:#00A06B; --c2:#5FE3B3;">
+                <i class="fa-solid fa-spray-can-sparkles"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div class="product-title">【9成新】极飞 P100 Pro 农业无人飞机</div>
+                <div class="product-meta">作业面积 1200亩 · 包含4电1充</div>
+                <div class="oc-badges">
+                  <span class="badge badge-success"><i class="fa-solid fa-check"></i> 官方已验机</span>
+                  <span class="badge badge-primary">支持UOM过户</span>
+                </div>
+                <div class="product-price num"><span class="cur">¥</span>29,000<span class="price-del">¥43,000</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 全新官方 -->
+        <div v-else class="mall-wrap">
+          <div class="card product-card lift">
+            <div style="display: flex; gap: 12px; margin-bottom: 10px;">
+              <div class="product-cover" style="--c1:#14295C; --c2:#2B56A8;">
+                <i class="fa-solid fa-helicopter"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div class="product-title">【官方直营】大疆 Matrice 350 RTK 行业旗舰机</div>
+                <div class="product-meta">支持挂载禅思 H20T 热成像 / L2 激光雷达</div>
+                <div class="oc-badges">
+                  <span class="badge badge-primary">正品保障</span>
+                  <span class="badge badge-gold">官方直营</span>
+                </div>
+                <div class="product-price num"><span class="cur">¥</span>49,888</div>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block" @click="showToast('支持企业对公转账与13%专票')">立即咨询企业集采</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 5. 个人中心 TAB ================= -->
+      <div class="tab-pane" v-if="!currentSubPage && currentTab === 'mine'">
+        <div class="mine-hero">
+          <div class="mine-row">
+            <div class="avatar-ring"><i class="fa-solid fa-user-tie"></i></div>
+            <div style="flex: 1;">
+              <div class="mine-name">
+                王建军
+                <span class="badge badge-gold"><i class="fa-solid fa-circle-check"></i> 民航CAAC认证</span>
+              </div>
+              <div class="mine-license num">执照编号：CAAC-UAV-2026089912</div>
+              <div class="mine-crew">所属机组：成都市天府低空巡检一组 (机长)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 资产与信用卡 -->
+        <div class="card asset-card">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+            <div class="credit-ring">
+              <div class="credit-ring-inner"><b>98</b><span>信用分</span></div>
+            </div>
+            <div class="asset-label">平台履约信用</div>
+          </div>
+          <div class="asset-sep"></div>
+          <div class="asset-item">
+            <div class="asset-num up num">¥14,250</div>
+            <div class="asset-label">接单总收益(已提现)</div>
+          </div>
+          <div class="asset-sep"></div>
+          <div class="asset-item">
+            <div class="asset-num plain num">¥1,000</div>
+            <div class="asset-label">履约保证金(已缴纳)</div>
+          </div>
+        </div>
+
+        <!-- 资质资产 -->
+        <div class="card">
+          <div class="qual-title">我的飞手资质与装备资产</div>
+          <div class="qual-list">
+            <div class="qual-row">
+              <span class="qual-name"><i class="fa-solid fa-id-card" style="color: var(--brand-primary);"></i> CAAC 超视距驾驶员执照</span>
+              <span class="qual-val ok">已核验有效</span>
+            </div>
+            <div class="qual-row">
+              <span class="qual-name"><i class="fa-solid fa-helicopter" style="color: var(--brand-teal);"></i> UOM 实名登记设备 (DJI M300)</span>
+              <span class="qual-val info num">SN: 1581F4...</span>
+            </div>
+            <div class="qual-row">
+              <span class="qual-name"><i class="fa-solid fa-file-shield" style="color: #722ED1;"></i> 平台强制保险 (随单自动附加)</span>
+              <span class="qual-val ok">三者险100万+机身险</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 功能菜单 -->
+        <div class="card menu-list">
+          <div class="menu-row" @click="openKfModal">
+            <span><i class="fa-brands fa-weixin lead" style="color: #07C160;"></i> 微信小程序官方客服</span>
+            <i class="fa-solid fa-angle-right"></i>
+          </div>
+          <div class="menu-row" @click="showToast('电子合同存证中心')">
+            <span><i class="fa-solid fa-file-contract lead" style="color: var(--brand-primary);"></i> 电子服务合同存证</span>
+            <i class="fa-solid fa-angle-right"></i>
+          </div>
+          <div class="menu-row" @click="openRepairOrder">
+            <span><i class="fa-solid fa-screwdriver-wrench lead" style="color: #D62E8C;"></i> 维修工单进度跟踪</span>
+            <i class="fa-solid fa-angle-right"></i>
+          </div>
+          <div class="menu-row" @click="showSubsidyModal = true">
+            <span><i class="fa-solid fa-coins lead" style="color: var(--brand-teal);"></i> 人社证书补贴申请</span>
+            <i class="fa-solid fa-angle-right"></i>
+          </div>
+          <div class="menu-row" @click="showToast('信用申诉与保证金管理')">
+            <span><i class="fa-solid fa-scale-balanced lead" style="color: var(--brand-accent);"></i> 信用分与防跳单申诉</span>
+            <i class="fa-solid fa-angle-right"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 6. 订单详情与履约工作台 (二级页面) ================= -->
+      <div class="tab-pane" v-if="currentSubPage === 'order-detail'" style="background: var(--bg-page); min-height: 100%;">
+        <div class="subpage-nav">
+          <div class="subpage-back" @click="currentSubPage = null">
+            <i class="fa-solid fa-arrow-left"></i> 订单履约工作台
+          </div>
+          <span class="badge badge-warning">履约进行中</span>
+        </div>
+
+        <!-- 高风险常驻提示条 -->
+        <div v-if="selectedOrder.isControlled" class="risk-banner">
+          <strong><i class="fa-solid fa-triangle-exclamation"></i> 管制空域安全提示:</strong><br>
+          该任务地点位于空管管制空域,起飞前必须回传 UOM 审批批文,作业已由平台自动附加强制商业保险。
+        </div>
+
+        <!-- 订单信息 -->
+        <div class="card" style="margin-top: 12px;">
+          <div class="oc-title" style="font-size: 16px;">{{ selectedOrder.title }}</div>
+          <div class="detail-price num"><span class="cur">¥</span>{{ selectedOrder.price }} <span class="price-note">(定金已托管)</span></div>
+          <div class="info-rows">
+            <div><i class="fa-solid fa-location-dot"></i> 作业地点：{{ selectedOrder.location }}</div>
+            <div><i class="fa-regular fa-clock"></i> 预定时间：{{ selectedOrder.time }}</div>
+            <div><i class="fa-solid fa-user-check"></i> 需求发包方：成都市某电力工程集团 (对公结算)</div>
+          </div>
+          <div class="phone-row">
+            <span class="phone-note"><i class="fa-solid fa-lock"></i> 号码双向脱敏 · IM 全程存证</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary btn-sm" @click="openOrderIm"><i class="fa-brands fa-weixin" style="color:#07C160;"></i> 平台IM</button>
+              <button class="btn btn-secondary btn-sm" @click="callPrivacyNumber"><i class="fa-solid fa-phone"></i> 虚拟号</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 电子服务合同 (V3.0 4.6.1/4.6.5 防跳单) -->
+        <div class="card">
+          <div class="uom-title"><i class="fa-solid fa-file-contract"></i> 电子服务合同</div>
+          <div class="uom-sub">接入 e签宝 · 具备法律效力 · 签署记录全程存证</div>
+          <div class="step-box">
+            <div class="step-box-head">
+              <span>合同编号：BS-HT-20260825-006</span>
+              <span class="badge" :class="contractSigned ? 'badge-success' : 'badge-warning'">{{ contractSigned ? '已签署 · 存证 0x8f3a…e21c' : '待签署' }}</span>
+            </div>
+            <div v-if="!contractSigned" style="font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
+              含<strong style="color:#D46B08;">反跳单条款</strong>:任何一方不得引导或接受私下交易,违者支付订单金额 <b>30%</b> 违约金。
+            </div>
+            <button v-if="!contractSigned" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 8px;" @click="agreeContract = false; showContractModal = true">
+              <i class="fa-solid fa-pen-nib"></i> 在线签署合同
+            </button>
+            <div v-else style="font-size: 11px; color: var(--color-success);"><i class="fa-solid fa-circle-check"></i> 双方已签署,需求方定金已托管至监管账户</div>
+          </div>
+        </div>
+
+        <!-- UOM 合规步骤条 -->
+        <div class="card">
+          <div class="uom-title"><i class="fa-solid fa-clipboard-check"></i> UOM“一登二查三申请”与保险核验</div>
+          <div class="uom-sub">根据《无人驾驶航空器飞行管理暂行条例》硬性履约流程</div>
+
+          <div class="stepper">
+            <div class="step-node completed">
+              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+              <span>① 一登实名</span>
+            </div>
+            <div class="step-link done"></div>
+            <div class="step-node completed">
+              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+              <span>② 二查空域</span>
+            </div>
+            <div class="step-link" :class="{done: isUomUploaded}"></div>
+            <div class="step-node" :class="{completed: isUomUploaded, active: !isUomUploaded}">
+              <div class="step-circle"><i v-if="isUomUploaded" class="fa-solid fa-check"></i><template v-else>3</template></div>
+              <span>③ 三申请批文</span>
+            </div>
+            <div class="step-link" :class="{done: isUomUploaded && isInsured}"></div>
+            <div class="step-node" :class="{completed: isInsured && isUomUploaded, active: isUomUploaded && !isInsured}">
+              <div class="step-circle"><i v-if="isInsured && isUomUploaded" class="fa-solid fa-check"></i><template v-else>4</template></div>
+              <span>④ 保险核验</span>
+            </div>
+          </div>
+
+          <!-- Step 3: UOM 批文回传 -->
+          <div class="step-box">
+            <div class="step-box-head">
+              <span>管制空域 UOM 飞行批文回传:</span>
+              <span class="badge" :class="isUomUploaded ? 'badge-success' : 'badge-danger'">{{ isUomUploaded ? '已回传 UOM-20260825-998' : '待上传' }}</span>
+            </div>
+            <button v-if="!isUomUploaded" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 4px;" @click="simulateUomUpload"><i class="fa-solid fa-cloud-arrow-up"></i> 点击上传 UOM 审批截图 / 批文号</button>
+          </div>
+
+          <!-- Step 4: 平台强制保险 -->
+          <div class="step-box">
+            <div class="step-box-head">
+              <span>平台强制保险(三者险+机身险):</span>
+              <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> 已自动附加</span>
+            </div>
+            <div style="color: var(--text-secondary); line-height: 1.6;">
+              本订单已由平台自动附加 <strong style="color: var(--text-primary);">第三者责任险(保额100万)+ 机身险</strong>,保费 ¥25 已随单代收,保单与订单实时绑定,出险由保司绿色通道理赔。
+            </div>
+            <div style="margin-top: 8px; background: #F6FFED; border: 1px dashed #95D475; border-radius: 8px; padding: 8px 10px; font-size: 11px; color: #389E0D;">
+              <i class="fa-solid fa-shield-halved"></i> 电子保单号:PICC-UAV-20260825-3500 · 承保:中国人保财险 · 与机身 SN 码自动绑定
+            </div>
+          </div>
+        </div>
+
+        <!-- 吸底操作区 -->
+        <div class="bottom-action">
+          <button class="btn btn-primary btn-block" :class="{'btn-disabled': !canStartFlight}" @click="doFlightCheckIn">
+            <i class="fa-solid fa-location-crosshairs"></i> 现场 GPS 定位打卡 (开始作业)
+          </button>
+          <div v-if="!canStartFlight" class="action-blocked">
+            * 必须完成 UOM 批文回传,方可开始现场打卡作业(平台强制保险已自动附加)。
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 7. 维修工单详情 (V3.0 4.5.4 进度跟踪 二级页面) ================= -->
+      <div class="tab-pane" v-if="currentSubPage === 'repair-order'" style="background: var(--bg-page); min-height: 100%;">
+        <div class="subpage-nav">
+          <div class="subpage-back" @click="currentSubPage = null">
+            <i class="fa-solid fa-arrow-left"></i> 维修工单详情
+          </div>
+          <span class="badge badge-primary">{{ repairDone ? '已完成' : '寄修 · 维修中' }}</span>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <div class="uom-title"><i class="fa-solid fa-screwdriver-wrench" style="color: #D62E8C;"></i> 工单 RO-20260825-018</div>
+          <div class="uom-sub">承修：极飞四川维修中心（高级维修商） · 预付款 ¥520 已托管</div>
+
+          <div class="stepper compact">
+            <div v-for="(s, i) in repairSteps" :key="s" class="step-node"
+                 :class="{completed: repairDone || i < repairStepIndex, active: !repairDone && i === repairStepIndex}">
+              <div class="step-circle"><i v-if="repairDone || i < repairStepIndex" class="fa-solid fa-check"></i><template v-else>{{ i + 1 }}</template></div>
+              <span>{{ s }}</span>
+            </div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-box-head">
+              <span>当前节点：</span>
+              <span class="badge badge-primary">{{ repairDone ? '已完成' : repairSteps[repairStepIndex] }}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
+              已完成图传模块拆检,确认为排线松动 + 天线馈线老化;已按报价单完成换件,预计 08-27 质检通过后顺丰发回。
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="qual-title">更换配件清单（与报价单一致）</div>
+          <div class="check-row"><span>图传排线组件（原厂件）</span><span class="check-val num">¥120</span></div>
+          <div class="check-row"><span>5.8G 天线馈线 × 1</span><span class="check-val num">¥85</span></div>
+          <div class="check-row"><span>人工费（高级维修商）</span><span class="check-val num">¥315</span></div>
+          <div class="check-row" style="background: rgba(0,181,120,.06);"><span style="font-weight: 600;">合计（平台托管 · 验收后结算）</span><span class="check-val ok num">¥520</span></div>
+        </div>
+
+        <div class="card">
+          <div class="qual-title">维修影像存档</div>
+          <div class="repair-photos">
+            <div class="repair-photo" style="--c1:#5B6B84; --c2:#8296B3;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+            <div class="repair-photo" style="--c1:#1677FF; --c2:#69B4FF;"><i class="fa-solid fa-microchip"></i></div>
+            <div class="repair-photo" style="--c1:#00A06B; --c2:#5FE3B3;"><i class="fa-solid fa-camera-retro"></i></div>
+          </div>
+          <div style="font-size: 10.5px; color: var(--text-tertiary); margin-top: 8px;">
+            拆检 / 换件 / 复测三阶段照片已关联 UOM 设备档案（SN: 1581F4AA9812）,二手交易时买家可查维修历史。
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="step-box" style="margin-bottom: 0;">
+            <div class="step-box-head">
+              <span>质保承诺：</span>
+              <span class="badge badge-success">整机维修 · 90 天质保</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
+              质保期内同一故障免费返修,往返物流由维修商承担;争议由平台依据维修记录与配件溯源仲裁。
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-action">
+          <button class="btn btn-primary btn-block" :class="{'btn-disabled': repairDone}" @click="confirmRepairAccept">
+            <i class="fa-solid fa-square-check"></i> {{ repairDone ? '已完成验收 · 尾款已结算' : '模拟质检通过 · 确认验收并结算' }}
+          </button>
+          <div v-if="!repairDone" class="action-blocked" style="color: var(--text-tertiary);">
+            验收确认后,托管款扣除平台佣金(15%)实时结算至维修商对公账户
+          </div>
+          <div v-else class="action-blocked" style="color: var(--color-success);">
+            <i class="fa-solid fa-circle-check"></i> 已解锁评价入口,维修记录已写入设备档案
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 8. 收到的接单申请 · 需求方选飞手 (二级页面) ================= -->
+      <div class="tab-pane" v-if="currentSubPage === 'select-pilot'" style="background: var(--bg-page); min-height: 100%;">
+        <div class="subpage-nav">
+          <div class="subpage-back" @click="currentSubPage = null">
+            <i class="fa-solid fa-arrow-left"></i> 收到的接单申请
+          </div>
+          <span class="badge badge-warning">{{ chosenPilot ? '已选定' : '3 位待选' }}</span>
+        </div>
+
+        <div class="airspace-box" style="margin: 12px 16px 0;">
+          <div class="airspace-title"><i class="fa-solid fa-file-signature"></i> 任务：简阳市 500 亩水稻飞防植保</div>
+          <div class="airspace-body">预算 ¥6,400 · 定金将托管至平台监管账户 · 建议优先选择「超视距执照 + 高信用」飞手</div>
+        </div>
+
+        <div v-for="p in pilotApps" :key="p.name" class="card pilot-card lift" :class="{chosen: chosenPilot === p.name}">
+          <div class="pilot-head">
+            <div class="pilot-avatar" :style="'--c1:'+p.c1+'; --c2:'+p.c2"><i class="fa-solid fa-user-astronaut"></i></div>
+            <div class="pilot-info">
+              <div class="pilot-name">{{ p.name }} <span class="badge" :class="p.cls">{{ p.license }}</span></div>
+              <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 2px;">{{ p.org }} · 申请于 {{ p.time }}</div>
+            </div>
+            <div class="pilot-quote num"><span>¥</span>{{ p.quote.toLocaleString() }}</div>
+          </div>
+          <div class="pilot-stats">
+            <div class="pilot-stat"><b>{{ p.credit }}</b><span>信用分</span></div>
+            <div class="pilot-stat"><b>{{ p.orders }}</b><span>完成单量</span></div>
+            <div class="pilot-stat"><b>{{ p.rate }}</b><span>好评率</span></div>
+            <div class="pilot-stat"><b>{{ p.resp }}</b><span>响应速度</span></div>
+          </div>
+          <div class="course-foot" style="border-top: none; padding-top: 0; margin-top: 10px;">
+            <span class="oc-note"><i class="fa-solid fa-shield-halved"></i> 保证金已缴 · CAAC 执照已核验</span>
+            <button class="btn btn-accent btn-sm" :class="{'btn-disabled': chosenPilot && chosenPilot !== p.name}" @click="choosePilot(p)">
+              {{ chosenPilot === p.name ? '已选定 ✓' : '选择 TA' }}
+            </button>
+          </div>
+        </div>
+
+        <div style="padding: 2px 16px 24px; font-size: 11px; color: var(--text-tertiary); text-align: center;">
+          选定后将推送电子服务合同,需求方支付定金后订单生效;其余申请自动礼貌回绝。
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 微信客服悬浮按钮 -->
+    <button class="contact-float-btn" @click="openKfModal" title="点击唤起微信小程序原生客服">
+      <i class="fa-brands fa-weixin"></i>
+      <span>客服</span>
+    </button>
+
+    <!-- BOTTOM TABBAR (5 Items) -->
+    <div class="tab-bar" v-if="!currentSubPage">
+      <div class="tab-item" :class="{active: currentTab === 'home'}" @click="currentTab = 'home'">
+        <i class="fa-solid fa-house"></i>
+        <span>首页</span>
+      </div>
+      <div class="tab-item" :class="{active: currentTab === 'orders'}" @click="currentTab = 'orders'">
+        <i class="fa-solid fa-satellite-dish"></i>
+        <span>接单广场</span>
+      </div>
+      <div class="tab-item" :class="{active: currentTab === 'learn'}" @click="currentTab = 'learn'">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>学习中心</span>
+      </div>
+      <div class="tab-item" :class="{active: currentTab === 'mall'}" @click="currentTab = 'mall'">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span>装备商城</span>
+      </div>
+      <div class="tab-item" :class="{active: currentTab === 'mine'}" @click="currentTab = 'mine'">
+        <i class="fa-solid fa-user"></i>
+        <span>我的</span>
+        <div class="tab-badge"></div>
+      </div>
+    </div>
+
+    <!-- ================= SIMULATED MODALS ================= -->
+
+    <!-- 1. 微信客服抽屉 -->
+    <div v-if="showKfSheet" class="modal-overlay" @click.self="showKfSheet = false">
+      <div class="kf-sheet">
+        <div class="kf-header">
+          <span><i class="fa-brands fa-weixin" style="color: #07C160; margin-right: 6px;"></i> 毕数飞行平台 · 微信官方客服</span>
+          <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 18px;" @click="showKfSheet = false"></i>
+        </div>
+        <div class="kf-body">
+          <div class="kf-bubble-sys">微信小程序原生客服通道已建立 (微信服务通知直达)</div>
+
+          <div class="kf-msg left">
+            <div class="kf-avatar" style="background: #1677FF; color: #fff;"><i class="fa-solid fa-headset"></i></div>
+            <div class="kf-bubble">
+              您好！我是毕数飞行平台专属智能客服小毕 ✈️<br>
+              请问有什么可以帮您？退出小程序后消息将通过【微信服务通知】实时发送给您。
+            </div>
+          </div>
+
+          <div v-for="(msg, idx) in kfChatHistory" :key="idx" class="kf-msg" :class="msg.role === 'user' ? 'right' : 'left'">
+            <div class="kf-avatar" :style="msg.role === 'user' ? 'background: #00B578; color: #fff;' : 'background: #1677FF; color: #fff;'">
+              <i :class="msg.role === 'user' ? 'fa-solid fa-user' : 'fa-solid fa-headset'"></i>
+            </div>
+            <div class="kf-bubble" v-html="msg.text"></div>
+          </div>
+        </div>
+
+        <div class="kf-quick-tags">
+          <span class="kf-tag" @click="sendKfMsg('人社技能培训真的免费吗？怎么领补贴？')">人社培训补贴政策</span>
+          <span class="kf-tag" @click="sendKfMsg('CAAC 执照考证怎么报？有什么优惠券？')">CAAC考证抵扣券</span>
+          <span class="kf-tag" @click="sendKfMsg('UOM空域适飞高度和管制区如何查询？')">UOM空域申报指引</span>
+          <span class="kf-tag" @click="sendKfMsg('无人机维修怎么报修？维修质保多久？')">维修服务与质保</span>
+          <span class="kf-tag" @click="sendKfMsg('CAAC证书补贴怎么申请？能领多少钱？')">人社证书补贴</span>
+        </div>
+
+        <div class="kf-footer">
+          <input type="text" class="kf-input" v-model="kfInput" placeholder="输入您的问题..." @keyup.enter="handleSendKf">
+          <button class="btn btn-primary btn-sm" @click="handleSendKf">发送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 学员成长赋能弹窗 -->
+    <div v-if="showExamVoucherModal" class="modal-overlay" @click.self="showExamVoucherModal = false">
+      <div class="modal-box" style="text-align: center;">
+        <div class="gift-icon"><i class="fa-solid fa-gift"></i></div>
+        <div style="font-size: 17px; font-weight: 700; color: var(--text-primary);">学员专属成长赋能礼包</div>
+        <div style="font-size: 13px; color: var(--text-secondary); margin: 8px 0 16px; line-height: 1.6;">
+          检测到您已通过技能基础培训！<br>
+          平台已为您发放 <strong style="color: var(--brand-accent); font-size: 16px;" class="num">¥800</strong> CAAC 考证抵用券，考取民航局执照立享接单变现权限！
+        </div>
+        <div class="voucher-box">
+          优惠券码：<strong class="num">SKILL-CAAC-800</strong> (全省定点航校通用)
+        </div>
+        <button class="btn btn-accent" style="width: 100%; margin-bottom: 8px;" @click="showExamVoucherModal = false; currentTab = 'learn'; learnTab = 'caac'">立即使用并前往考证专区</button>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; border: none; color: var(--text-tertiary);" @click="showExamVoucherModal = false">稍后再说</button>
+      </div>
+    </div>
+
+    <!-- 3. 42项官方验机报告弹窗 -->
+    <div v-if="showCheckReportModal" class="modal-overlay" @click.self="showCheckReportModal = false">
+      <div class="modal-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div class="modal-title"><i class="fa-solid fa-clipboard-check" style="color: var(--color-success);"></i> 42项官方验机检测报告</div>
+          <i class="fa-solid fa-xmark modal-close" @click="showCheckReportModal = false"></i>
+        </div>
+        <div class="check-meta">
+          检测机型：DJI Mavic 3E | 序列号：<span class="num">1581F4AA9812</span><br>
+          检测机构：毕数飞行官方无人机检测实验室 (成都市)
+        </div>
+        <div>
+          <div class="check-row">
+            <span>1. 飞控黑匣子日志分析</span>
+            <span class="check-val ok">✓ 历史无炸机/无进水记录</span>
+          </div>
+          <div class="check-row">
+            <span>2. 动力电池循环与压差</span>
+            <span class="check-val ok">✓ 循环18次 寿命98% 压差0.01V</span>
+          </div>
+          <div class="check-row">
+            <span>3. 云台电机与机械虚位</span>
+            <span class="check-val ok">✓ 角度回中正常 传感器良好</span>
+          </div>
+          <div class="check-row">
+            <span>4. UOM 国家平台登记校验</span>
+            <span class="check-val info">✓ 原机主已解绑 可合法过户</span>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top: 16px;" @click="showCheckReportModal = false; showToast('已将验机凭证加入交易保障')">确认保障并关闭</button>
+      </div>
+    </div>
+
+    <!-- 4. 维修服务报修弹窗 (V3.0 新增板块) -->
+    <div v-if="showRepairModal" class="modal-overlay" @click.self="showRepairModal = false">
+      <div class="modal-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div class="modal-title"><i class="fa-solid fa-screwdriver-wrench" style="color: #D62E8C;"></i> 维修服务报修</div>
+          <i class="fa-solid fa-xmark modal-close" @click="showRepairModal = false"></i>
+        </div>
+
+        <!-- 报修信息 -->
+        <div class="step-box" style="margin-bottom: 10px;">
+          <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.7;">
+            <div><i class="fa-solid fa-helicopter" style="width: 16px; color: var(--text-tertiary);"></i> 设备：DJI M300 RTK (SN: 1581F4AA9812)</div>
+            <div><i class="fa-solid fa-triangle-exclamation" style="width: 16px; color: var(--color-warning);"></i> 故障描述：图传信号断续,飞行 10 分钟后图传丢失</div>
+          </div>
+        </div>
+
+        <!-- AI 预诊断 -->
+        <div class="airspace-box" style="margin-bottom: 10px;">
+          <div class="airspace-title"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 故障预诊断</div>
+          <div class="airspace-body">
+            疑似故障：<strong>图传模块排线松动 / 图传频段干扰</strong><br>
+            预估维修费用区间：<strong class="num">¥300 ~ ¥800</strong> · 建议寄修检测
+          </div>
+        </div>
+
+        <!-- 智能匹配维修商报价 -->
+        <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">智能匹配维修商 (3家报价):</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+          <div class="check-row">
+            <span>大疆授权服务中心 (成都) <span class="badge badge-gold" style="margin-left: 4px;">品牌授权</span></span>
+            <span class="check-val ok num">¥680 · 质保90天</span>
+          </div>
+          <div class="check-row">
+            <span>极飞四川维修中心 <span class="badge badge-primary" style="margin-left: 4px;">高级</span></span>
+            <span class="check-val ok num">¥520 · 质保90天</span>
+          </div>
+          <div class="check-row">
+            <span>成都翼修电子科技 <span class="badge badge-default" style="margin-left: 4px;">中级</span></span>
+            <span class="check-val ok num">¥380 · 质保30天</span>
+          </div>
+        </div>
+
+        <!-- 服务方式确认 (V3.0 4.5.4 寄修/上门双模式) -->
+        <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin: 12px 0 8px;">选择服务方式:</div>
+        <label class="ins-option" :class="{selected: repairMode === 'mail'}" @click="repairMode = 'mail'">
+          <input type="radio" name="repairMode" value="mail" :checked="repairMode === 'mail'">
+          <div>
+            <strong>寄修模式 (推荐 · 包邮)</strong>
+            <div class="ins-desc">顺丰上门取件免运费,运费险由平台赠送;维修商收货后 48 小时内出具正式检测方案</div>
+          </div>
+        </label>
+        <label class="ins-option" :class="{selected: repairMode === 'onsite'}" @click="repairMode = 'onsite'">
+          <input type="radio" name="repairMode" value="onsite" :checked="repairMode === 'onsite'">
+          <div>
+            <strong>上门模式 (企业客户 / 批量维修)</strong>
+            <div class="ins-desc">认证技师上门取件或现场检修,上门费 ¥30 以报价单形式单独列明,支持批量设备集中维保</div>
+          </div>
+        </label>
+
+        <button class="btn btn-accent btn-block" style="margin-top: 14px;" @click="submitRepair">
+          <i class="fa-solid fa-paper-plane"></i> {{ repairMode === 'mail' ? '提交报修 (寄修模式 · 包邮)' : '提交报修 (预约技师上门)' }}
+        </button>
+        <div style="text-align: center; font-size: 11px; color: var(--text-tertiary); margin-top: 8px;">
+          维修记录将关联 UOM 设备档案 · 支持以旧换新抵扣
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. CAAC 报名收银台 (V3.0 4.2.4 报名即分账 + 阶梯退费) -->
+    <div v-if="showCashierModal" class="modal-overlay" @click.self="showCashierModal = false">
+      <div class="modal-box">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="modal-title"><i class="fa-solid fa-wallet" style="color: var(--brand-primary);"></i> 报名收银台</div>
+          <i class="fa-solid fa-xmark modal-close" @click="showCashierModal = false"></i>
+        </div>
+        <div class="cashier-amount">
+          <div style="font-size: 12px; color: var(--text-secondary);">{{ cashierCourse.name }}</div>
+          <div class="cashier-price"><span class="cur">¥</span>{{ cashierCourse.pay.toLocaleString() }}</div>
+        </div>
+        <div class="pay-row"><span>培训班费</span><b class="num">¥{{ cashierCourse.price.toLocaleString() }}</b></div>
+        <div class="pay-row" v-if="cashierCourse.voucher"><span>学员成长券</span><b class="num" style="color: var(--color-success);">-¥{{ cashierCourse.voucher }}</b></div>
+        <div class="pay-row"><span>资金通道</span><b><i class="fa-solid fa-building-columns" style="color: var(--brand-primary);"></i> 银行资金监管账户</b></div>
+        <div class="pay-row"><span>结算方式</span><b>报名即分账 · 平台服务费 20% 即结</b></div>
+
+        <div class="refund-table" style="margin-top: 12px;">
+          <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;"><i class="fa-solid fa-rotate-left" style="color: var(--brand-primary);"></i> 阶梯退费规则（按培训进度）</div>
+          <div class="refund-row"><span>开课前申请退费</span><b>退还 90%</b></div>
+          <div class="refund-row"><span>开课 ≤ 总课时 30%</span><b>退还 60%</b></div>
+          <div class="refund-row"><span>总课时 30% ~ 50%</span><b>退还 30%</b></div>
+          <div class="refund-row"><span>超过总课时 50%</span><b style="color: var(--color-danger);">不予退费</b></div>
+          <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 5px;">因机构原因停课/师资变动：全额退款且平台免收服务费；退款由平台(20%)与机构(80%)按原分账比例各自承担。</div>
+        </div>
+
+        <label class="agree-row">
+          <input type="checkbox" v-model="agreeRefund">
+          <span>我已阅读并同意《培训服务协议》<b style="color:#D46B08;">反跳单条款</b>及上述阶梯退费规则</span>
+        </label>
+        <button class="btn btn-accent btn-block" :class="{'btn-disabled': !agreeRefund || paying}" @click="confirmPay">
+          <i class="fa-solid fa-qrcode"></i> {{ paying ? '支付中...' : ('微信支付 ¥' + cashierCourse.pay.toLocaleString()) }}
+        </button>
+        <div style="text-align: center; font-size: 10.5px; color: var(--text-tertiary); margin-top: 8px;">
+          支付成功后平台留存 20%,机构实时到账 80%,分账凭证支持双方对账
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. 人社证书补贴政策查询 (V3.0 4.2.5) -->
+    <div v-if="showSubsidyModal" class="modal-overlay" @click.self="showSubsidyModal = false">
+      <div class="modal-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div class="modal-title"><i class="fa-solid fa-coins" style="color: var(--brand-teal);"></i> 人社证书补贴查询</div>
+          <i class="fa-solid fa-xmark modal-close" @click="showSubsidyModal = false"></i>
+        </div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">选择参保地,自动匹配当地 CAAC 证书补贴政策：</div>
+        <div class="chip-row in-form" style="padding-bottom: 10px;">
+          <span v-for="(v, c) in subsidyDB" :key="c" class="chip" :class="{on: subsidyCity === c}" @click="subsidyCity = c">{{ c }}</span>
+        </div>
+        <div class="check-row"><span>视距内驾驶员执照</span><span class="check-val ok num">¥{{ subsidyNow.within }}</span></div>
+        <div class="check-row"><span>超视距驾驶员执照</span><span class="check-val ok num">¥{{ subsidyNow.beyond }}</span></div>
+        <div class="check-row"><span>教员执照</span><span class="check-val ok num">¥{{ subsidyNow.trainer }}</span></div>
+        <div class="step-box" style="margin-top: 10px;">
+          <div class="step-box-head">
+            <span>申请要件</span>
+            <span class="badge badge-primary">平台代整理 · 一键推送</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.7;">
+            CAAC 电子执照 · 身份证 · 本人银行卡 · 平台缴费凭证;{{ subsidyNow.note }}
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top: 12px;" @click="requestSubsidy">
+          <i class="fa-solid fa-bolt"></i> 一键申领（材料自动汇总推送）
+        </button>
+        <div style="text-align: center; font-size: 10.5px; color: var(--text-tertiary); margin-top: 8px;">
+          支持个人自行申领或培训机构批量代办,审核通过后补贴直达个人银行账户
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. 电子合同签署 (V3.0 4.6.1 / 4.6.5) -->
+    <div v-if="showContractModal" class="modal-overlay" @click.self="showContractModal = false">
+      <div class="modal-box">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="modal-title"><i class="fa-solid fa-file-contract" style="color: var(--brand-primary);"></i> 电子服务合同签署</div>
+          <i class="fa-solid fa-xmark modal-close" @click="showContractModal = false"></i>
+        </div>
+        <div class="check-meta" style="margin-top: 10px;">
+          甲方（需求方）：成都市某电力工程集团<br>
+          乙方（飞手）：王建军 <span class="num">138****1234</span>（已实名核验）<br>
+          服务内容：220kV 输电线路精细巡检（温江区万春镇）
+        </div>
+        <div class="contract-clause">
+          <i class="fa-solid fa-scale-balanced"></i> <strong>反跳单条款（显著提示）</strong>：甲乙双方确认本次服务通过毕数飞行平台撮合达成,任何一方不得引导或接受私下交易;违者须向平台支付订单金额 <strong>30%</strong> 的违约金,平台有权扣除保证金并公示违规记录。
+        </div>
+        <div class="pay-row"><span>合同金额</span><b class="num">¥3,500（定金 40% 托管监管账户）</b></div>
+        <div class="pay-row"><span>签署效力</span><b>e签宝 CA 数字证书 · 区块链存证</b></div>
+        <label class="agree-row">
+          <input type="checkbox" v-model="agreeContract">
+          <span>我已逐条阅读全部条款,承诺不进行站外私下交易</span>
+        </label>
+        <button class="btn btn-primary btn-block" :class="{'btn-disabled': !agreeContract}" @click="signContract">
+          <i class="fa-solid fa-pen-nib"></i> 使用 CA 证书签名并提交
+        </button>
+      </div>
+    </div>
+
+    <!-- 8. 订单 IM 沟通 (V3.0 防跳单技术隔离层) -->
+    <div v-if="showImSheet" class="modal-overlay" @click.self="showImSheet = false">
+      <div class="kf-sheet" style="height: 560px;">
+        <div class="kf-header">
+          <span style="display: flex; align-items: center; gap: 7px;">
+            <span style="background:#1677FF; color:#fff; width:26px; height:26px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:13px;"><i class="fa-solid fa-helmet-safety"></i></span>
+            张工 · 市电集团（项目对接）
+            <span class="badge badge-success" style="margin-left: 2px;"><i class="fa-solid fa-shield-halved"></i> 存证中</span>
+          </span>
+          <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 18px; color: var(--text-tertiary);" @click="showImSheet = false"></i>
+        </div>
+        <div class="kf-body">
+          <div class="kf-bubble-sys">双方号码已脱敏 · 聊天记录作为纠纷仲裁依据 · 站外联系方式将被自动拦截</div>
+          <div class="kf-msg left">
+            <div class="kf-avatar" style="background:#1677FF;color:#fff;"><i class="fa-solid fa-user-tie"></i></div>
+            <div class="kf-bubble">王机长好,28 号上午的巡检任务其中 3 基塔位要加拍红外,你的设备没问题吧?</div>
+          </div>
+          <div class="kf-msg right">
+            <div class="kf-avatar" style="background:#00B578;color:#fff;"><i class="fa-solid fa-user"></i></div>
+            <div class="kf-bubble">没问题,M300 挂 H20T 热成像,红外分辨率 640×512,满足输电规程要求。</div>
+          </div>
+          <template v-for="(m, i) in imChatHistory" :key="'im' + i">
+            <div v-if="m.risk" class="kf-risk-tip"><i class="fa-solid fa-triangle-exclamation"></i><span>{{ m.text }}</span></div>
+            <div v-else-if="m.self" class="kf-msg right">
+              <div class="kf-avatar" style="background:#00B578;color:#fff;"><i class="fa-solid fa-user"></i></div>
+              <div class="kf-bubble" :style="m.blocked ? 'background:#FFE7E9;text-decoration:line-through;color:#CF1322;' : ''">{{ m.text }}</div>
+            </div>
+            <div v-else class="kf-msg left">
+              <div class="kf-avatar" style="background:#1677FF;color:#fff;"><i class="fa-solid fa-user-tie"></i></div>
+              <div class="kf-bubble">{{ m.text }}</div>
+            </div>
+          </template>
+        </div>
+        <div class="kf-quick-tags">
+          <span class="kf-tag" @click="sendImMsg('我们加个微信详聊吧,私下方便')">试试发送“加微信”</span>
+          <span class="kf-tag" @click="sendImMsg('明天 09:00 准时到场 GPS 打卡')">确认作业时间</span>
+          <span class="kf-tag" @click="sendImMsg('请在平台签署电子合同并支付定金,我这边锁定档期')">引导签署合同</span>
+        </div>
+        <div class="kf-footer">
+          <input type="text" class="kf-input" v-model="imInput" placeholder="输入消息..." @keyup.enter="handleSendIm">
+          <button class="btn btn-primary btn-sm" @click="handleSendIm">发送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div v-if="toastMsg" class="toast">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>{{ toastMsg }}</span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const { createApp, ref, computed } = Vue;
+
+  createApp({
+    setup() {
+      const currentTime = ref('09:41');
+      const currentTab = ref('home');
+      const userRole = ref('pilot');
+      const isPublishMode = ref(false);
+      const filterType = ref('all');
+      const learnTab = ref('skill');
+      const mallTab = ref('secondhand');
+
+      const currentSubPage = ref(null);
+      const selectedOrder = ref({});
+      const isUomUploaded = ref(false);
+      const isInsured = ref(true); // V3.0: 平台强制保险,接单即自动附加
+
+      const showKfSheet = ref(false);
+      const showExamVoucherModal = ref(false);
+      const showCheckReportModal = ref(false);
+      const showRepairModal = ref(false);
+      const toastMsg = ref('');
+      const kfInput = ref('');
+
+      const publishForm = ref({
+        type: '电力巡检',
+        location: '成都市天府新区兴隆湖科创岛',
+        price: 4200
+      });
+
+      const orderList = ref([
+        {
+          id: 'ORD20260825001',
+          title: '成都市温江区 220kV 电力巡检',
+          price: 3500,
+          type: '巡检',
+          isControlled: true,
+          licenseReq: '超视距执照',
+          location: '成都市温江区万春镇',
+          time: '2026-08-28 09:00',
+          publisher: '成都市某电力工程集团'
+        },
+        {
+          id: 'ORD20260825002',
+          title: '崇州市 800亩 晚稻飞防农药喷洒',
+          price: 6400,
+          type: '植保',
+          isControlled: false,
+          licenseReq: '视距内/超视距',
+          location: '崇州市隆兴镇现代农业园',
+          time: '2026-08-29 全天',
+          publisher: '崇州市金穗农机合作社'
+        },
+        {
+          id: 'ORD20260825003',
+          title: '天府新区 兴隆湖 1:500 倾斜摄影三维建模',
+          price: 9800,
+          type: '测绘',
+          isControlled: true,
+          licenseReq: '多旋翼超视距',
+          location: '成都市天府新区兴隆湖',
+          time: '2026-08-30 08:30',
+          publisher: '四川省空间地理信息测绘院'
+        }
+      ]);
+
+      const currentActiveOrder = computed(() => orderList.value[0]);
+
+      const filteredOrders = computed(() => {
+        if (filterType.value === 'all') return orderList.value;
+        return orderList.value.filter(o => o.type === filterType.value);
+      });
+
+      const canStartFlight = computed(() => {
+        if (selectedOrder.value.isControlled && !isUomUploaded.value) return false;
+        if (!isInsured.value) return false;
+        return true;
+      });
+
+      const kfChatHistory = ref([
+        { role: 'bot', text: '您好，这里是微信小程序原生客服！您可以咨询人社补贴申报、CAAC考证优惠或空域合规流程。' }
+      ]);
+
+      const showToast = (msg) => {
+        toastMsg.value = msg;
+        setTimeout(() => { toastMsg.value = ''; }, 2200);
+      };
+
+      const openOrderDetail = (order) => {
+        selectedOrder.value = order;
+        currentSubPage.value = 'order-detail';
+        isUomUploaded.value = false;
+        isInsured.value = true; // 平台强制保险自动附加,无需选择
+      };
+
+      const tryGrabOrder = (order) => {
+        openOrderDetail(order);
+        showToast('资质核验通过(CAAC执照有效·信用98分)已锁定订单！');
+      };
+
+      const callPrivacyNumber = () => {
+        showToast('正在通过虚拟中间号 199****8821 建立隐私通话...');
+      };
+
+      const simulateGisMap = () => {
+        showToast('地图选点成功：成都市天府新区 (适飞区)');
+      };
+
+      const submitPublishOrder = () => {
+        showToast('需求发布成功！已托管定金至资金监管专户');
+        isPublishMode.value = false;
+      };
+
+      const simulateUomUpload = () => {
+        isUomUploaded.value = true;
+        showToast('UOM 审批批文号 UOM-20260825-998 回传核验成功！');
+      };
+
+      const doFlightCheckIn = () => {
+        if (!canStartFlight.value) return;
+        showToast('现场 GPS 打卡成功 (经纬度 104.06, 30.57),作业开始！');
+      };
+
+      const openEnrollModal = (courseName) => {
+        showToast(`人社局资格校验通过：${courseName} 零元报名成功！`);
+      };
+
+      /* ===== V3.0 补齐:CAAC 报名收银台(报名即分账 + 阶梯退费) ===== */
+      const showCashierModal = ref(false);
+      const cashierCourse = ref({ name: '', price: 0, voucher: 0, pay: 0 });
+      const agreeRefund = ref(false);
+      const paying = ref(false);
+      const openCaacPayModal = (name, price) => {
+        const voucher = name.includes('超视距') ? 800 : 0;
+        cashierCourse.value = { name, price, voucher, pay: price - voucher };
+        agreeRefund.value = false;
+        paying.value = false;
+        showCashierModal.value = true;
+      };
+      const confirmPay = () => {
+        if (!agreeRefund.value || paying.value) return;
+        paying.value = true;
+        setTimeout(() => {
+          paying.value = false;
+          showCashierModal.value = false;
+          showToast(`支付成功 ¥${cashierCourse.value.pay.toLocaleString()} 至监管账户,平台留存20%,机构实时到账80%(报名即分账)`);
+        }, 900);
+      };
+
+      /* ===== V3.0 补齐:人社证书补贴政策查询(4.2.5) ===== */
+      const showSubsidyModal = ref(false);
+      const subsidyCity = ref('成都市');
+      const subsidyDB = {
+        '成都市': { within: '1,500~2,000', beyond: '2,000~3,000', trainer: '3,000~5,000', note: '需成都社保或在蓉就业证明,取证后 12 个月内申领有效。' },
+        '绵阳市': { within: '1,200~1,800', beyond: '1,800~2,600', trainer: '2,600~4,500', note: '已纳入绵阳低空经济试点补贴目录,每季度集中受理。' },
+        '宜宾市': { within: '1,000~1,500', beyond: '1,500~2,200', trainer: '2,200~4,000', note: '需本地定点机构结业证书,与技能提升补贴不重复享受。' }
+      };
+      const subsidyNow = computed(() => subsidyDB[subsidyCity.value]);
+      const requestSubsidy = () => {
+        showSubsidyModal.value = false;
+        showToast(`${subsidyCity.value}补贴申请已提交,预计可申领 ¥2,500,材料已自动汇总推送至人社窗口`);
+      };
+
+      /* ===== V3.0 补齐:维修服务方式 + 工单进度(4.5.4/4.5.6) ===== */
+      const repairMode = ref('mail');
+      const repairSteps = ['待检测', '检测中', '定方案', '维修中', '质检中', '已完成'];
+      const repairStepIndex = ref(3);
+      const repairDone = ref(false);
+      const submitRepair = () => {
+        showRepairModal.value = false;
+        showToast(repairMode.value === 'mail'
+          ? '寄修报修单已提交:顺丰上门取件已预约,维修商将在 2 小时内响应'
+          : '上门报修单已提交:技师将联系您确认上门时段,上门费以报价单为准');
+        setTimeout(() => { currentSubPage.value = 'repair-order'; }, 900);
+      };
+      const openRepairOrder = () => {
+        repairStepIndex.value = 3;
+        repairDone.value = false;
+        currentSubPage.value = 'repair-order';
+      };
+      const confirmRepairAccept = () => {
+        if (repairDone.value) return;
+        repairDone.value = true;
+        showToast('验收确认:托管款 ¥442 已扣佣结算至维修商,90天质保生效');
+      };
+
+      /* ===== V3.0 补齐:需求方选飞手 ===== */
+      const pilotApps = ref([
+        { name: '李国强', license: '超视距执照', cls: 'badge-gold', org: '天府低空巡检一组', time: '2小时前', quote: 6100, credit: 99, orders: 217, rate: '99.2%', resp: '5分钟', c1: '#1677FF', c2: '#69B4FF' },
+        { name: '周天磊', license: '超视距执照', cls: 'badge-gold', org: '个人飞手 · 押金¥2000', time: '3小时前', quote: 6300, credit: 96, orders: 88, rate: '98.1%', resp: '12分钟', c1: '#00A06B', c2: '#5FE3B3' },
+        { name: '吴静怡', license: '视距内执照', cls: 'badge-default', org: '蜀鹰农业植保队', time: '5小时前', quote: 5800, credit: 92, orders: 46, rate: '97.3%', resp: '28分钟', c1: '#722ED1', c2: '#B37FEB' }
+      ]);
+      const chosenPilot = ref('');
+      const openSelectPilot = () => {
+        chosenPilot.value = '';
+        currentSubPage.value = 'select-pilot';
+      };
+      const choosePilot = (p) => {
+        if (chosenPilot.value && chosenPilot.value !== p.name) return;
+        chosenPilot.value = p.name;
+        showToast(`已选定 ${p.name},电子合同已推送,其支付定金后订单生效`);
+      };
+
+      /* ===== V3.0 补齐:电子合同签署(防跳单法律层) ===== */
+      const showContractModal = ref(false);
+      const agreeContract = ref(false);
+      const contractSigned = ref(false);
+      const signContract = () => {
+        if (!agreeContract.value) return;
+        contractSigned.value = true;
+        showContractModal.value = false;
+        showToast('合同已签署并区块链存证(存证编号 0x8f3a…e21c),请通知需求方支付定金');
+      };
+
+      /* ===== V3.0 补齐:订单 IM 沟通(NLP 风控拦截演示) ===== */
+      const showImSheet = ref(false);
+      const imInput = ref('');
+      const imChatHistory = ref([]);
+      const riskWords = ['微信', 'vx', 'weixin', '手机号', '电话多少', '线下交易', '私下转', '支付宝', 'qq'];
+      const openOrderIm = () => {
+        imInput.value = '';
+        showImSheet.value = true;
+      };
+      const sendImMsg = (txt) => {
+        const hit = riskWords.some(w => txt.toLowerCase().includes(w));
+        imChatHistory.value.push({ self: true, text: txt, blocked: hit });
+        if (hit) {
+          setTimeout(() => {
+            imChatHistory.value.push({ risk: true, text: '[风控提示] 检测到疑似站外联系方式,该消息已对对方屏蔽并推送风控后台复核。请改用平台虚拟号沟通;核实跳单将扣除保证金并追偿订单金额 30% 违约金。' });
+          }, 350);
+        } else {
+          setTimeout(() => {
+            imChatHistory.value.push({ self: false, text: '收到!记得回传 UOM 批文后再开始作业,现场见。' });
+          }, 600);
+        }
+      };
+      const handleSendIm = () => {
+        if (!imInput.value.trim()) return;
+        sendImMsg(imInput.value.trim());
+        imInput.value = '';
+      };
+
+      const openCheckReportModal = () => {
+        showCheckReportModal.value = true;
+      };
+
+      const openKfModal = () => {
+        showKfSheet.value = true;
+      };
+
+      const sendKfMsg = (txt) => {
+        kfChatHistory.value.push({ role: 'user', text: txt });
+        setTimeout(() => {
+          if (txt.includes('维修') || txt.includes('质保')) {
+            kfChatHistory.value.push({ role: 'bot', text: '维修服务说明：您可在首页金刚区「维修服务」提交报修,平台 AI 预诊断后智能匹配 3-5 家认证维修商报价。支持寄修(包邮)与上门维修;软件调试质保 7 天、配件更换 30 天、整机维修 90 天、主板维修 180 天,质保期内同一故障免费返修。' });
+          } else if (txt.includes('证书补贴')) {
+            kfChatHistory.value.push({ role: 'bot', text: 'CAAC 证书补贴：考取执照后可在「我的-人社证书补贴申请」一键申领,视距内执照补贴 1500-2000 元、超视距 2000-3000 元、教员 3000-5000 元(以当地人社政策为准),材料由平台自动汇总推送。' });
+          } else if (txt.includes('免费') || txt.includes('补贴')) {
+            kfChatHistory.value.push({ role: 'bot', text: '政策说明：符合人社普惠补贴条件的学员(农村转移劳动力、应届毕业生、失业人员等),经平台“五位一体”打卡存证结业后,培训费用由人社局直补培训机构,学员全程零费用！' });
+          } else if (txt.includes('CAAC') || txt.includes('优惠券')) {
+            kfChatHistory.value.push({ role: 'bot', text: '技能班学员专享成长通道：结业即可领取 <strong>800元专属抵扣券</strong>,报考超视距执照直减！考取执照后即自动解锁商用订单接单权限。' });
+          } else if (txt.includes('UOM') || txt.includes('空域')) {
+            kfChatHistory.value.push({ role: 'bot', text: '依据《暂行条例》：微型无人机真高≤50米、轻小型真高≤120米适飞空域免审批；若订单位于管制空域,平台将引导您直连 UOM 申请并回传批文。' });
+          } else {
+            kfChatHistory.value.push({ role: 'bot', text: '客服已收到您的咨询！已为您接入企业微信人工坐席,稍后服务通知将推送到您的微信聊天列表。' });
+          }
+        }, 600);
+      };
+
+      const handleSendKf = () => {
+        if (!kfInput.value.trim()) return;
+        sendKfMsg(kfInput.value.trim());
+        kfInput.value = '';
+      };
+
+      return {
+        currentTime,
+        currentTab,
+        userRole,
+        isPublishMode,
+        filterType,
+        learnTab,
+        mallTab,
+        currentSubPage,
+        selectedOrder,
+        currentActiveOrder,
+        filteredOrders,
+        publishForm,
+        isUomUploaded,
+        isInsured,
+        canStartFlight,
+        showKfSheet,
+        showExamVoucherModal,
+        showCheckReportModal,
+        showRepairModal,
+        toastMsg,
+        kfInput,
+        kfChatHistory,
+        showToast,
+        openOrderDetail,
+        tryGrabOrder,
+        callPrivacyNumber,
+        simulateGisMap,
+        submitPublishOrder,
+        simulateUomUpload,
+        doFlightCheckIn,
+        openEnrollModal,
+        openCaacPayModal,
+        confirmPay,
+        cashierCourse,
+        agreeRefund,
+        paying,
+        showSubsidyModal,
+        subsidyCity,
+        subsidyDB,
+        subsidyNow,
+        requestSubsidy,
+        repairMode,
+        repairSteps,
+        repairStepIndex,
+        repairDone,
+        submitRepair,
+        openRepairOrder,
+        confirmRepairAccept,
+        pilotApps,
+        chosenPilot,
+        openSelectPilot,
+        choosePilot,
+        showContractModal,
+        agreeContract,
+        contractSigned,
+        signContract,
+        showImSheet,
+        imInput,
+        imChatHistory,
+        sendImMsg,
+        handleSendIm,
+        openOrderIm,
+        openCheckReportModal,
+        openKfModal,
+        sendKfMsg,
+        handleSendKf
+      };
+    }
+  }).mount('#app');
+</script>
+
+</body>
+</html>

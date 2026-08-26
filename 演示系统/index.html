@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>毕数飞行平台 - 全端交互演示系统门户 (Interactive Demo Hub)</title>
+  <!-- Tailwind CSS & Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .gradient-bg {
+      background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
+    }
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 35px -10px rgba(14, 165, 233, 0.25);
+    }
+  </style>
+</head>
+<body class="gradient-bg text-slate-100 font-sans min-h-screen flex flex-col">
+
+  <!-- Navigation Header -->
+  <header class="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md sticky top-0 z-30 px-8 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white text-xl shadow-lg shadow-sky-500/30">
+        <i class="fa-solid fa-helicopter"></i>
+      </div>
+      <div>
+        <div class="font-bold text-lg text-white flex items-center gap-2">
+          毕数飞行平台
+          <span class="text-xs bg-sky-500/20 text-sky-400 font-semibold px-2 py-0.5 rounded border border-sky-500/30">V3.0 演示版</span>
+        </div>
+        <div class="text-xs text-slate-400">低空经济 · 无人机全生命周期服务生态平台</div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 text-xs text-slate-300">
+      <span class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+        <i class="fa-solid fa-file-word text-sky-400 mr-1.5"></i> 已匹配《系统设计方案 V3.0》
+      </span>
+      <span class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+        <i class="fa-solid fa-palette text-amber-400 mr-1.5"></i> 已匹配《C端小程序UI设计规范》
+      </span>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-10 space-y-12">
+    
+    <div class="text-center max-w-3xl mx-auto space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 text-xs font-semibold border border-sky-500/20">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> 5 大核心业务板块 · 4 端全保真交互演示系统
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+        无人机“培训 · 考证 · 接单 · 交易 · 维修”<br>
+        <span class="bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">全生命周期商业闭环交互体验</span>
+      </h1>
+      <p class="text-sm text-slate-400 leading-relaxed">
+        本套交互原型无需任何后端或服务器环境支持，在现代浏览器中直接双击即可运行。深度还原了人社技能补贴“五位一体”证据链申报、CAAC执照报名即分账与证书补贴、UOM“一登二查三申请”空域合规、平台强制保险、维修服务撮合与 AI 故障预诊断等核心业务机制。
+      </p>
+    </div>
+
+    <!-- 4 Portals Card Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- Portal 1: C端微信小程序 -->
+      <a href="c-app.html" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between card-hover group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-sky-500/10 rounded-bl-full pointer-events-none"></div>
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-mobile-screen"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-sky-400 uppercase tracking-wider">移动端小程序</span>
+            <h2 class="text-lg font-bold text-white mt-1 group-hover:text-sky-300 transition">C端微信小程序</h2>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            严格遵循 375×812 真实手机容器规范。包含 5 大 Tab、飞手抢单资质核验、UOM 步骤条、<strong>平台强制保险自动附加</strong>、维修服务报修与 AI 预诊断、CAAC 800元券转化漏斗与微信原生客服。
+          </p>
+          <div class="space-y-1.5 pt-2 border-t border-slate-800 text-xs text-slate-300">
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 飞手/需求方/学员 身份切换</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> UOM“一登二查三申请”交互</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 维修服务报修 · AI故障预诊断</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 42项官方验机检测报告</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 微信小程序原生客服模拟</div>
+          </div>
+        </div>
+        <div class="mt-6 pt-4 flex items-center justify-between text-xs font-bold text-sky-400">
+          <span>进入小程序演示 →</span>
+          <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition"></i>
+        </div>
+      </a>
+
+      <!-- Portal 2: B端培训机构后台 -->
+      <a href="b-training.html" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between card-hover group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">教务与补贴端</span>
+            <h2 class="text-lg font-bold text-white mt-1 group-hover:text-emerald-300 transition">B端培训机构管理后台</h2>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            面向人社定点学校与 CAAC 基地。核心包含<strong>人社补贴“五位一体”材料打包生成向导（结业证+身份备案+考勤打卡+考评表+影像）</strong>、CAAC 执照回传与人社证书补贴批量申报。
+          </p>
+          <div class="space-y-1.5 pt-2 border-t border-slate-800 text-xs text-slate-300">
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 线上微表情+线下指纹打卡流水</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 五位一体证据包一键打包直报</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> CAAC 执照回传与报名即分账对账</div>
+          </div>
+        </div>
+        <div class="mt-6 pt-4 flex items-center justify-between text-xs font-bold text-emerald-400">
+          <span>进入机构后台演示 →</span>
+          <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition"></i>
+        </div>
+      </a>
+
+      <!-- Portal 3: B端企业与机组后台 -->
+      <a href="b-enterprise.html" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between card-hover group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-blue-500/10 rounded-bl-full pointer-events-none"></div>
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-building-user"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">用机与机组端</span>
+            <h2 class="text-lg font-bold text-white mt-1 group-hover:text-blue-300 transition">B端用机企业/机组后台</h2>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            面向测绘院、巡检服务商与飞防机组。支持<strong>机组编队调度（机长/副手/地勤）、自由持证飞手挂靠绑定、内部工单派发与绩效分润（企业30%:飞手70%）</strong>及企业店铺。
+          </p>
+          <div class="space-y-1.5 pt-2 border-t border-slate-800 text-xs text-slate-300">
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 机组编队与调度甘特看板</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 自由飞手资质审查与年险绑定</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 13% 增值税专票直开与对公结算</div>
+          </div>
+        </div>
+        <div class="mt-6 pt-4 flex items-center justify-between text-xs font-bold text-blue-400">
+          <span>进入企业后台演示 →</span>
+          <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition"></i>
+        </div>
+      </a>
+
+      <!-- Portal 4: B端运营与风控中枢 -->
+      <a href="b-admin.html" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between card-hover group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-purple-500/10 rounded-bl-full pointer-events-none"></div>
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">总控与风控中枢</span>
+            <h2 class="text-lg font-bold text-white mt-1 group-hover:text-purple-300 transition">B端综合运营与风控中枢</h2>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            平台超级管理中枢。包含<strong>低空全域作业监控大屏、维修服务商入驻审核与等级认证、UOM 管制空域批文核销、防跳单预警与保证金罚没仲裁法庭</strong>。
+          </p>
+          <div class="space-y-1.5 pt-2 border-t border-slate-800 text-xs text-slate-300">
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 维修商入驻审核与四级等级认证</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 疑似跳单违约处置与保证金扣除</div>
+            <div class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> 5大板块多源盈利清分总流水</div>
+          </div>
+        </div>
+        <div class="mt-6 pt-4 flex items-center justify-between text-xs font-bold text-purple-400">
+          <span>进入风控中枢演示 →</span>
+          <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition"></i>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Typical Business Demonstration Routes -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+      <h3 class="font-bold text-white text-base mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-route text-sky-400"></i> 典型业务闭环演示导览路线
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800">
+          <div class="font-bold text-sky-300 text-sm mb-1.5">路线一：飞手抢单与空域合规 / 平台强制保险全流程</div>
+          <div class="text-slate-400 space-y-1">
+            1. 打开 <strong>c-app.html</strong> 首页推荐单或接单广场，点击“我要抢单”通过 CAAC 资质校验；<br>
+            2. 进入履约工作台，查看 <strong>UOM“一登二查三申请”步骤条</strong>；<br>
+            3. 确认<strong>平台强制保险自动附加</strong>（三者险+机身险，保费随单代收）；<br>
+            4. 回传 UOM 批文截图并完成现场 GPS 打卡起飞。
+          </div>
+        </div>
+
+        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800">
+          <div class="font-bold text-emerald-300 text-sm mb-1.5">路线二：人社技能培训与“五位一体”补贴直报</div>
+          <div class="text-slate-400 space-y-1">
+            1. 打开 <strong>c-app.html</strong> 学习中心，点击技能培训“零元报名”，秒级校验人社受惠资格；<br>
+            2. 打开 <strong>b-training.html</strong> 查看线上微表情与线下指纹考勤打卡流水；<br>
+            3. 进入申报中心，点击 <strong>“生成五位一体材料直报人社专窗”</strong> 完成全套证据链打包。
+          </div>
+        </div>
+
+        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800">
+          <div class="font-bold text-amber-300 text-sm mb-1.5">路线三：CAAC考证抵扣券转化与报名即分账闭环</div>
+          <div class="text-slate-400 space-y-1">
+            1. 打开 <strong>c-app.html</strong> 弹出“结业学员专属 800 元 CAAC 考证抵用券”转化弹窗；<br>
+            2. 学员在线支付报名费至监管账户，<strong>平台立即按 20% 比例分账</strong>给培训机构；<br>
+            3. 打开 <strong>b-training.html</strong> “CAAC排考中心”回传执照，为学员解锁接单权限并批量申报人社证书补贴。
+          </div>
+        </div>
+
+        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800">
+          <div class="font-bold text-purple-300 text-sm mb-1.5">路线四：企业机组调度与全域风控处置</div>
+          <div class="text-slate-400 space-y-1">
+            1. 打开 <strong>b-enterprise.html</strong> 查看旗下 4 大机组调度状态，为飞手分派任务并配置绩效分润；<br>
+            2. 打开 <strong>b-admin.html</strong> 风控中枢，审核新入驻维修服务商的品牌授权与技师资质；<br>
+            3. 查看疑似跳单异常通话预警，执行违约扣除保证金 ¥1,000 处置。
+          </div>
+        </div>
+
+        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 md:col-span-2">
+          <div class="font-bold text-rose-300 text-sm mb-1.5">路线五：设备维修服务闭环（V3.0 新增板块）</div>
+          <div class="text-slate-400 space-y-1">
+            1. 打开 <strong>c-app.html</strong> 首页金刚区“维修服务”，提交故障报修并体验 <strong>AI 故障预诊断</strong>；<br>
+            2. 查看平台智能匹配的 3 家维修商报价（初级抽 20% / 中级 15% / 品牌授权 5%）；<br>
+            3. 打开 <strong>b-admin.html</strong> “资质准入与维修商审核”，完成维修商入驻审批与保证金核验。
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500">
+    <div>毕数飞行平台系统设计方案配套演示版 · 2026年8月</div>
+    <div class="mt-1">规范依据：《毕数飞行平台系统设计方案_V3.0》 & 《毕数飞行平台_C端小程序UI设计规范》</div>
+  </footer>
+
+</body>
+</html>

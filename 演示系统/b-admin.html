@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>毕数飞行平台 - B端综合运营与风控管理中枢</title>
+  <!-- Vue 3 & Font Awesome & Tailwind CSS CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex">
+
+<div id="app" class="flex-1 flex min-h-screen">
+
+  <!-- Dark Tech Sidebar -->
+  <aside class="w-64 bg-slate-900 border-r border-slate-800 text-slate-300 flex flex-col flex-shrink-0">
+    <div class="h-16 flex items-center gap-3 px-6 bg-slate-950 text-white font-bold text-lg border-b border-slate-800">
+      <i class="fa-solid fa-shield-halved text-sky-400 text-2xl"></i>
+      <span>运营与风控中枢</span>
+    </div>
+    
+    <div class="p-3 mx-3 my-3 bg-slate-800/60 rounded-xl border border-slate-700/60">
+      <div class="text-xs text-sky-400 font-bold">系统运行状态：正常 (等保三级)</div>
+      <div class="text-xs text-slate-400 mt-0.5">招商银行资金监管专户实时连通</div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="flex-1 px-3 space-y-1.5 overflow-y-auto">
+      <button @click="currentNav = 'cockpit'" :class="currentNav === 'cockpit' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-chart-line w-5"></i>
+        <span>低空运营全域大屏</span>
+      </button>
+
+      <button @click="currentNav = 'audit'" :class="currentNav === 'audit' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-file-circle-check w-5 text-emerald-400"></i>
+        <div class="flex-1 text-left flex justify-between items-center">
+          <span>资质准入与维修商审核</span>
+          <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded-full">待审 3</span>
+        </div>
+      </button>
+
+      <button @click="currentNav = 'uom'" :class="currentNav === 'uom' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-satellite-dish w-5 text-sky-400"></i>
+        <span>UOM合规与空域风控</span>
+      </button>
+
+      <button @click="currentNav = 'antibypass'" :class="currentNav === 'antibypass' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-scale-balanced w-5 text-rose-400"></i>
+        <div class="flex-1 text-left flex justify-between items-center">
+          <span>防跳单监控与仲裁法庭</span>
+          <span class="bg-rose-500/20 text-rose-400 text-xs px-2 py-0.5 rounded-full">预警 1</span>
+        </div>
+      </button>
+
+      <button @click="currentNav = 'finance'" :class="currentNav === 'finance' ? 'bg-sky-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
+        <i class="fa-solid fa-coins w-5 text-amber-400"></i>
+        <span>财务分账与清结算中心</span>
+      </button>
+    </nav>
+
+    <!-- Bottom Portal Return -->
+    <div class="p-4 border-t border-slate-800 text-xs text-slate-400 flex justify-between items-center">
+      <a href="index.html" class="hover:text-sky-400 flex items-center gap-1.5 text-slate-400">
+        <i class="fa-solid fa-house"></i> 平台统一门户
+      </a>
+      <span>V3.0 演示版</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col min-w-0 bg-slate-950 overflow-y-auto">
+    <!-- Top Header Bar -->
+    <header class="h-16 bg-slate-900 border-b border-slate-800 px-8 flex items-center justify-between sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <h1 class="text-lg font-bold text-white">
+          {{ navTitles[currentNav] }}
+        </h1>
+        <span class="bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-500/20">
+          ● 全省低空无人机作业实时监控中 (142架在线)
+        </span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <span class="text-xs text-slate-400">平台风控负责人：超级管理员 (Admin)</span>
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Admin" class="w-8 h-8 rounded-full border border-slate-700 bg-slate-800" />
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <!-- ================= 1. 低空运营全域大屏 ================= -->
+      <div v-if="currentNav === 'cockpit'" class="space-y-6">
+        <!-- Metric Grid -->
+        <div class="grid grid-cols-4 gap-6">
+          <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl shadow-lg">
+            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">今日全平台撮合 GMV</div>
+            <div class="text-3xl font-extrabold text-sky-400 mt-2">¥328,600</div>
+            <div class="text-xs text-emerald-400 mt-2 flex items-center gap-1">
+              <i class="fa-solid fa-arrow-trend-up"></i> 平台累计撮合破 1,280 万元
+            </div>
+          </div>
+
+          <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl shadow-lg">
+            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">今日平台佣金纯收益</div>
+            <div class="text-3xl font-extrabold text-emerald-400 mt-2">¥49,290</div>
+            <div class="text-xs text-slate-400 mt-2">
+              撮合15% + 考证20% + 电商5% + 维修15%
+            </div>
+          </div>
+
+          <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl shadow-lg">
+            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">作业中管制空域任务</div>
+            <div class="text-3xl font-extrabold text-amber-400 mt-2">18 <span class="text-sm font-normal text-slate-400">单</span></div>
+            <div class="text-xs text-emerald-400 mt-2">
+              UOM 批文回传核销率 100%
+            </div>
+          </div>
+
+          <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl shadow-lg">
+            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">资金监管账户沉淀资金</div>
+            <div class="text-3xl font-extrabold text-indigo-400 mt-2">¥2,450,000</div>
+            <div class="text-xs text-slate-400 mt-2">
+              履约保证金池 + 订单托管金
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulated GIS Map Box -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-white text-base"><i class="fa-solid fa-map-location-dot text-sky-400 mr-2"></i> 四川省低空无人机作业实时电子沙盘（GIS遥测联动）</h3>
+            <span class="text-xs text-slate-400">更新时间：实时 (延迟 &lt; 1秒)</span>
+          </div>
+
+          <div class="h-64 rounded-xl bg-slate-950 border border-slate-800 relative overflow-hidden flex items-center justify-center p-6 text-center">
+            <!-- Simulated Radar & Heat dots -->
+            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            
+            <div class="relative z-10 space-y-2">
+              <div class="text-sm font-semibold text-sky-300">成都市（主城区管制空域 · 18组作业已备案） | 崇州市（晚稻飞防 · 适飞空域 42架作业）</div>
+              <div class="text-xs text-slate-400">德阳市输电线路巡检（真高80米） | 兴隆湖倾斜摄影航测（批文已核销）</div>
+              <div class="pt-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> 自动接入民航局 UOM 适飞空域电子围栏数据库
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 2. 资质准入与维修商入驻审核中心 (FEATURE) ================= -->
+      <div v-if="currentNav === 'audit'" class="space-y-6">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-lg">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-white">维修服务商入驻审核与等级认证</h2>
+              <p class="text-xs text-slate-400 mt-1">依据 V3.0 维修商准入标准:核验营业执照、品牌厂商认证技师(≥2名)、维修车间设备与质保承诺,并核定等级与抽成比例</p>
+            </div>
+            <span class="text-xs bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-full border border-amber-500/30">待审核入驻申请:1 笔</span>
+          </div>
+
+          <div class="border border-slate-800 rounded-xl overflow-hidden">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-800/80 text-slate-400 font-semibold border-b border-slate-700 text-xs">
+                <tr>
+                  <th class="py-3.5 px-6">维修商 / 地区</th>
+                  <th class="py-3.5 px-6">申请等级 / 抽成</th>
+                  <th class="py-3.5 px-6">品牌厂商认证技师</th>
+                  <th class="py-3.5 px-6">质保承诺</th>
+                  <th class="py-3.5 px-6">履约保证金</th>
+                  <th class="py-3.5 px-6 text-right">审核操作</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 text-slate-300">
+                <tr class="hover:bg-slate-800/40 transition">
+                  <td class="py-4 px-6">
+                    <div class="font-semibold text-white">成都翼修电子科技有限公司</div>
+                    <div class="text-xs text-slate-500">四川 · 成都 · 营业执照已验真</div>
+                  </td>
+                  <td class="py-4 px-6">
+                    <div class="text-sky-400 font-semibold">中级维修商</div>
+                    <div class="text-xs font-mono text-slate-400">平台抽成 15%</div>
+                  </td>
+                  <td class="py-4 px-6 text-xs">
+                    <div class="text-emerald-400 font-semibold">大疆认证技师 × 2</div>
+                    <div class="text-slate-400">极飞认证技师 × 1</div>
+                  </td>
+                  <td class="py-4 px-6 text-xs">
+                    <div class="text-slate-300">常规 30 天 / 核心部件 90 天</div>
+                  </td>
+                  <td class="py-4 px-6 text-xs">
+                    <div class="text-amber-400 font-bold">¥5,000 已冻结托管</div>
+                  </td>
+                  <td class="py-4 px-6 text-right space-x-2">
+                    <button class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow" @click="showToast('【审核通过】维修商入驻已核准,等级:中级(抽成15%),已开通接单报价权限!')">通过入驻</button>
+                    <button class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-rose-400 rounded-lg text-xs" @click="showToast('驳回申请并要求补充品牌授权材料')">驳回</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3. UOM 合规与空域风控中心 ================= -->
+      <div v-if="currentNav === 'uom'" class="space-y-6">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-lg">
+          <h2 class="text-xl font-bold text-white mb-4">UOM 管制空域批文核销与放行监控</h2>
+          <p class="text-xs text-slate-400 mb-6">平台严守合规底线：管制空域订单未回传 UOM 审批批文或未通过审核的，系统自动锁定现场作业打卡。</p>
+          
+          <div class="border border-slate-800 rounded-xl p-4 bg-slate-950 flex justify-between items-center">
+            <div>
+              <div class="font-bold text-white text-base">兴隆湖 1:500 倾斜摄影三维建模项目 (管制空域)</div>
+              <div class="text-xs text-slate-400 mt-1">UOM 审批批文编号：UOM-SC-2026-0825-998 · 批复高度真高 150米</div>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-400 font-bold px-3 py-1 rounded-full border border-emerald-500/30">
+              <i class="fa-solid fa-circle-check"></i> 批文已核销 放行作业
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 4. 防跳单监控与仲裁法庭 ================= -->
+      <div v-if="currentNav === 'antibypass'" class="space-y-6">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-lg">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-white">五维一体防跳单风控预警与保证金处置</h2>
+              <p class="text-xs text-slate-400 mt-1">基于虚拟隐私号异常短通话监控、频繁取消订单画像及电子合同违约金条款追偿</p>
+            </div>
+          </div>
+
+          <!-- Alert Item -->
+          <div class="border border-rose-900/40 rounded-xl p-4 bg-rose-950/20 flex justify-between items-center mb-4">
+            <div>
+              <div class="font-bold text-rose-300 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                疑似跳单预警：飞手 (李某某) 接单后 3 分钟内通过虚拟号通话仅 6 秒即主动取消订单
+              </div>
+              <div class="text-xs text-slate-400 mt-1">涉嫌线下私联交易 · 系统已自动冻结其抢单权限并调取通话录音证据</div>
+            </div>
+            <button class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold shadow" @click="showToast('【违约处置执行】已扣除该飞手履约保证金 ¥1,000，信用分扣除 50 分，全平台公示！')">
+              扣除保证金并处置
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 5. 财务分账与清结算中心 ================= -->
+      <div v-if="currentNav === 'finance'" class="space-y-6">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-lg">
+          <h2 class="text-xl font-bold text-white mb-4">平台多源商业盈利清分与资金监管流水 (5大板块)</h2>
+
+          <div class="grid grid-cols-5 gap-4 mb-6">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <div class="text-xs text-slate-400">订单撮合佣金 (10%~20%)</div>
+              <div class="text-xl font-bold text-sky-400 mt-1">¥24,800.00</div>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <div class="text-xs text-slate-400">CAAC考证分账提成 (15%~25%)</div>
+              <div class="text-xl font-bold text-amber-400 mt-1">¥16,000.00</div>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <div class="text-xs text-slate-400">维修服务佣金 (5%~20%)</div>
+              <div class="text-xl font-bold text-rose-400 mt-1">¥5,680.00</div>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <div class="text-xs text-slate-400">人社补贴对接技术服务费</div>
+              <div class="text-xl font-bold text-emerald-400 mt-1">¥12,800.00</div>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <div class="text-xs text-slate-400">商业飞行险分销佣金 (15%~30%)</div>
+              <div class="text-xl font-bold text-purple-400 mt-1">¥3,450.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const { createApp, ref } = Vue;
+
+  createApp({
+    setup() {
+      const currentNav = ref('cockpit');
+
+      const navTitles = {
+        cockpit: '数字低空全域监控大屏',
+        audit: '资质准入与维修商入驻审核',
+        uom: 'UOM合规与空域风控中心',
+        antibypass: '防跳单监控与仲裁法庭',
+        finance: '财务分账与清结算中心'
+      };
+
+      const showToast = (msg) => {
+        alert(msg);
+      };
+
+      return {
+        currentNav,
+        navTitles,
+        showToast
+      };
+    }
+  }).mount('#app');
+</script>
+
+</body>
+</html>
