@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>毕数飞行平台 - B端用机企业与机组管理后台</title>
+  <title>毕数飞行平台 - B端用机企业与机组后台 (Enterprise Hub)</title>
   <!-- Vue 3 & Font Awesome & Tailwind CSS CDN -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,89 +13,129 @@
       --brand-primary: #1677FF;
       --brand-gradient: linear-gradient(135deg, #1677FF 0%, #00C2FF 100%);
     }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex antialiased select-none">
 
-<div id="app" class="flex-1 flex min-h-screen">
+<div id="app" class="flex-1 flex min-h-screen overflow-hidden">
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0">
+  <!-- ================= Toast 浮动提示组件 ================= -->
+  <transition enter-active-class="transform transition ease-out duration-300" enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-4" enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-200" leave-from-class="opacity-100" leave-to-class="opacity-0">
+    <div v-if="toast.show" class="fixed top-5 right-5 z-50 max-w-md bg-white border border-slate-200 shadow-2xl p-4 rounded-xl flex items-start gap-3.5 text-sm">
+      <div class="mt-0.5 text-lg" :class="{
+        'text-emerald-500': toast.type === 'success',
+        'text-blue-500': toast.type === 'info',
+        'text-amber-500': toast.type === 'warning',
+        'text-rose-500': toast.type === 'danger'
+      }">
+        <i :class="toastIcon"></i>
+      </div>
+      <div class="flex-1">
+        <div class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-0.5">{{ toast.title || '企业调度通知' }}</div>
+        <div class="text-xs text-slate-600 leading-relaxed">{{ toast.message }}</div>
+      </div>
+      <button @click="toast.show = false" class="text-slate-400 hover:text-slate-600 text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </transition>
+
+  <!-- ================= Sidebar ================= -->
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 z-30">
     <div class="h-16 flex items-center gap-3 px-6 bg-slate-950 text-white font-bold text-lg border-b border-slate-800">
-      <i class="fa-solid fa-building-user text-blue-400 text-2xl"></i>
-      <span>企业与机组后台</span>
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white text-lg shadow-lg shadow-blue-500/20">
+        <i class="fa-solid fa-building-user"></i>
+      </div>
+      <div>
+        <div class="text-sm font-extrabold tracking-wide">用机企业与机组</div>
+        <div class="text-[10px] text-blue-400 font-mono">ENTERPRISE HUB V3.0</div>
+      </div>
     </div>
     
     <!-- Enterprise Info Card -->
-    <div class="p-4 mx-3 my-3 bg-slate-800/80 rounded-xl border border-slate-700">
-      <div class="text-xs text-blue-400 font-semibold mb-1">企业认证 · 金牌用机单位</div>
-      <div class="text-sm font-bold text-white truncate">四川省天府空间信息测绘有限公司</div>
-      <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
-        已绑定机组：4个 · 飞手：12人
+    <div class="p-4 mx-3 my-3 bg-slate-800/80 rounded-xl border border-slate-700/80 space-y-1">
+      <div class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">企业认证 · 金牌用机单位</div>
+      <div class="text-xs font-bold text-white truncate">四川省天府空间信息测绘有限公司</div>
+      <div class="text-[11px] text-slate-400 mt-1 flex items-center justify-between pt-1 border-t border-slate-700/60">
+        <span class="text-emerald-400 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 绑定机组 4 组
+        </span>
+        <span class="text-slate-400">持证飞手 12 人</span>
       </div>
     </div>
 
     <!-- Navigation Menu -->
-    <nav class="flex-1 px-3 space-y-1.5 overflow-y-auto">
-      <button @click="currentNav = 'dashboard'" :class="currentNav === 'dashboard' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
-        <i class="fa-solid fa-chart-line w-5"></i>
+    <nav class="flex-1 px-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button @click="currentNav = 'dashboard'" :class="currentNav === 'dashboard' ? 'bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/30' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs transition duration-200">
+        <i class="fa-solid fa-chart-line w-4 text-blue-400"></i>
         <span>企业运营总览</span>
       </button>
 
-      <button @click="currentNav = 'fleet'" :class="currentNav === 'fleet' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
-        <i class="fa-solid fa-people-group w-5 text-sky-400"></i>
+      <button @click="currentNav = 'fleet'" :class="currentNav === 'fleet' ? 'bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/30' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs transition duration-200">
+        <i class="fa-solid fa-people-group w-4 text-sky-400"></i>
         <div class="flex-1 text-left flex justify-between items-center">
           <span>机组编队与飞手调度</span>
-          <span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded-full">核心</span>
+          <span class="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-blue-500/30">核心</span>
         </div>
       </button>
 
-      <button @click="currentNav = 'orders'" :class="currentNav === 'orders' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
-        <i class="fa-solid fa-file-signature w-5"></i>
-        <span>企业发单与合同存证</span>
+      <button @click="currentNav = 'orders'" :class="currentNav === 'orders' ? 'bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/30' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs transition duration-200">
+        <i class="fa-solid fa-file-signature w-4 text-emerald-400"></i>
+        <span>发包需求与合同存证</span>
       </button>
 
-      <button @click="currentNav = 'store'" :class="currentNav === 'store' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
-        <i class="fa-solid fa-shop w-5 text-emerald-400"></i>
+      <button @click="currentNav = 'store'" :class="currentNav === 'store' ? 'bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/30' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs transition duration-200">
+        <i class="fa-solid fa-shop w-4 text-amber-400"></i>
         <span>企业店铺与商品上架</span>
       </button>
 
-      <button @click="currentNav = 'finance'" :class="currentNav === 'finance' ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-800 text-slate-300'" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition">
-        <i class="fa-solid fa-receipt w-5"></i>
+      <button @click="currentNav = 'finance'" :class="currentNav === 'finance' ? 'bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/30' : 'hover:bg-slate-800 text-slate-400'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs transition duration-200">
+        <i class="fa-solid fa-receipt w-4 text-indigo-400"></i>
         <span>绩效分润与专票对账</span>
       </button>
     </nav>
 
     <!-- Bottom Portal Return -->
-    <div class="p-4 border-t border-slate-800 text-xs text-slate-400 flex justify-between items-center">
-      <a href="index.html" class="hover:text-blue-400 flex items-center gap-1.5">
-        <i class="fa-solid fa-house"></i> 平台统一门户
+    <div class="p-4 border-t border-slate-800 text-xs text-slate-400 flex justify-between items-center bg-slate-950/60">
+      <a href="index.html" class="hover:text-blue-400 flex items-center gap-1.5 transition">
+        <i class="fa-solid fa-arrow-left"></i> 返回演示门户
       </a>
-      <span>V3.0 演示版</span>
+      <span class="text-slate-500 text-[11px]">演示版</span>
     </div>
   </aside>
 
-  <!-- Main Content Area -->
-  <main class="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
+  <!-- ================= Main Content Area ================= -->
+  <main class="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto custom-scrollbar">
     <!-- Top Header Bar -->
     <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-20">
       <div class="flex items-center gap-3">
-        <h1 class="text-lg font-bold text-slate-800">
+        <h1 class="text-base font-bold text-slate-800 flex items-center gap-2">
           {{ navTitles[currentNav] }}
         </h1>
-        <span class="bg-blue-50 text-blue-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-200">
-          VIP 会员有效期至：2027-08-25
+        <span class="bg-blue-50 text-blue-600 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-blue-200">
+          企业 VIP 专属专线 · 招商银行对公资金监管中
         </span>
       </div>
 
       <div class="flex items-center gap-4">
-        <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow" @click="currentNav = 'orders'">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow transition" @click="currentNav = 'orders'">
           <i class="fa-solid fa-plus"></i> 发布大型飞行项目
         </button>
-        <div class="flex items-center gap-2">
-          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Manager" class="w-8 h-8 rounded-full border bg-slate-100" />
-          <span class="text-sm font-semibold text-slate-700">刘总 (运营总监)</span>
+        <div class="h-4 w-px bg-slate-200"></div>
+        <div class="flex items-center gap-2.5">
+          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Manager" class="w-8 h-8 rounded-full border border-slate-200 bg-slate-100" />
+          <div>
+            <div class="text-xs font-bold text-slate-800">刘总 (运营总监)</div>
+            <div class="text-[10px] text-slate-400">天府测绘管理层</div>
+          </div>
         </div>
       </div>
     </header>
@@ -105,50 +145,53 @@
 
       <!-- ================= 1. 企业运营总览 ================= -->
       <div v-if="currentNav === 'dashboard'" class="space-y-6">
-        <div class="grid grid-cols-4 gap-6">
-          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">执行中飞行项目</div>
-            <div class="text-3xl font-bold text-slate-800 mt-2">6 <span class="text-sm font-normal text-slate-400">个</span></div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="text-slate-500 text-xs font-bold uppercase tracking-wider">执行中飞行项目</div>
+            <div class="text-3xl font-extrabold text-slate-900 mt-2 font-mono">6 <span class="text-sm font-normal text-slate-400">个</span></div>
             <div class="text-xs text-emerald-600 font-semibold mt-2">空域批文均已回传生效</div>
           </div>
 
-          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">在岗持证飞手 / 机组</div>
-            <div class="text-3xl font-bold text-blue-600 mt-2">12 <span class="text-sm font-normal text-slate-400">人 / 4 组</span></div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="text-slate-500 text-xs font-bold uppercase tracking-wider">在岗持证飞手 / 机组</div>
+            <div class="text-3xl font-extrabold text-blue-600 mt-2 font-mono">12 <span class="text-sm font-normal text-slate-400">人 / 4 组</span></div>
             <div class="text-xs text-slate-500 mt-2">均持 CAAC 超视距执照</div>
           </div>
 
-          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">本月作业总产值 (流水)</div>
-            <div class="text-3xl font-bold text-slate-900 mt-2">¥168,400</div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="text-slate-500 text-xs font-bold uppercase tracking-wider">本月作业总产值 (流水)</div>
+            <div class="text-3xl font-extrabold text-slate-900 mt-2 font-mono">¥168,400</div>
             <div class="text-xs text-emerald-600 font-semibold mt-2">环比上月 +22.4%</div>
           </div>
 
-          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-slate-500 text-xs font-medium uppercase tracking-wider">已开具增值税专票</div>
-            <div class="text-3xl font-bold text-emerald-600 mt-2">¥142,000</div>
-            <div class="text-xs text-slate-400 mt-1">13% 进项税抵扣已合规入账</div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="text-slate-500 text-xs font-bold uppercase tracking-wider">已开具增值税专票</div>
+            <div class="text-3xl font-extrabold text-emerald-600 mt-2 font-mono">¥142,000</div>
+            <div class="text-xs text-slate-400 mt-1">13% 进项税合规抵扣</div>
           </div>
         </div>
 
-        <!-- Dispatch Table -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-slate-800 text-base">企业各机组今日作业调度实时状态</h3>
-            <button class="text-xs text-blue-600 font-semibold hover:underline" @click="currentNav = 'fleet'">进入机组管理 →</button>
+        <!-- Dispatch Status Grid -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">企业各机组今日作业调度实时状态</h3>
+              <p class="text-xs text-slate-500 mt-0.5">支持按机长、作业载荷与空域备案号实时监控</p>
+            </div>
+            <button class="text-xs text-blue-600 font-bold hover:underline" @click="currentNav = 'fleet'">进入机组调度工作台 →</button>
           </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div v-for="team in fleetList" :key="team.id" class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div v-for="team in fleetList" :key="team.id" class="border border-slate-200 rounded-xl p-4 bg-slate-50/60 hover:bg-white hover:shadow-md transition">
               <div class="flex justify-between items-start">
                 <div>
-                  <span class="font-bold text-slate-900 text-base">{{ team.name }}</span>
+                  <span class="font-bold text-slate-900 text-sm">{{ team.name }}</span>
                   <div class="text-xs text-slate-500 mt-0.5">机长：{{ team.leader }} ({{ team.leaderLicense }}) · 成员 {{ team.members }} 人</div>
                 </div>
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full" :class="team.status === '作业中' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'">{{ team.status }}</span>
+                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full" :class="team.status === '作业中' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'">{{ team.status }}</span>
               </div>
-              <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-600 flex justify-between">
-                <span>当前任务：{{ team.currentTask }}</span>
-                <span class="font-bold text-blue-600">产值 ¥{{ team.monthlyRevenue }}</span>
+              <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-600 flex justify-between items-center">
+                <span>当前任务：<strong>{{ team.currentTask }}</strong></span>
+                <span class="font-bold text-blue-600 font-mono">本月产值 ¥{{ team.monthlyRevenue }}</span>
               </div>
             </div>
           </div>
@@ -157,36 +200,36 @@
 
       <!-- ================= 2. 机组编队与飞手调度 (CORE) ================= -->
       <div v-if="currentNav === 'fleet'" class="space-y-6">
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <div class="flex justify-between items-center mb-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 class="text-xl font-bold text-slate-900">企业机组编队与持证飞手名册</h2>
-              <p class="text-xs text-slate-500 mt-1">支持自由飞手企业挂靠、多飞手机组组建、任务指派与自动绩效分润规则设置</p>
+              <p class="text-xs text-slate-500 mt-1">支持自由飞手企业挂靠、多飞手机组组建、任务指派与自动绩效分润规则设置（企业30%:飞手70%）</p>
             </div>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg" @click="showToast('已生成飞手邀请码：TF-UAV-2026')">
-              <i class="fa-solid fa-user-plus mr-1"></i> 邀请持证飞手加入企业
+            <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition" @click="showToast('已生成企业飞手专属绑定邀请码：TF-UAV-2026', 'info', '飞手邀请')">
+              <i class="fa-solid fa-user-plus mr-1"></i> 邀请持证飞手挂靠
             </button>
           </div>
 
           <!-- Pilots Table -->
           <div class="overflow-x-auto border border-slate-200 rounded-xl">
-            <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
                 <tr>
                   <th class="py-3.5 px-6">飞手姓名 / 电话</th>
                   <th class="py-3.5 px-6">所属机组 / 岗位</th>
-                  <th class="py-3.5 px-6">CAAC 执照编号</th>
-                  <th class="py-3.5 px-6">平台强制保险状态</th>
+                  <th class="py-3.5 px-6">民航 CAAC 执照</th>
+                  <th class="py-3.5 px-6">平台强制保险</th>
                   <th class="py-3.5 px-6">平台信用分</th>
                   <th class="py-3.5 px-6">绩效分润比例</th>
                   <th class="py-3.5 px-6 text-right">操作</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-slate-700">
-                <tr v-for="pilot in pilotsList" :key="pilot.id" class="hover:bg-slate-50 transition">
+                <tr v-for="pilot in pilotsList" :key="pilot.id" class="hover:bg-slate-50/80 transition">
                   <td class="py-4 px-6">
-                    <div class="font-semibold text-slate-900">{{ pilot.name }}</div>
-                    <div class="text-xs text-slate-400">{{ pilot.phone }}</div>
+                    <div class="font-bold text-slate-900 text-sm">{{ pilot.name }}</div>
+                    <div class="text-slate-400 font-mono text-[11px]">{{ pilot.phone }}</div>
                   </td>
                   <td class="py-4 px-6">
                     <span class="text-xs font-bold bg-sky-50 text-sky-800 px-2 py-0.5 rounded border border-sky-200">{{ pilot.team }}</span>
@@ -195,15 +238,15 @@
                   <td class="py-4 px-6 font-mono text-xs font-semibold text-slate-700">{{ pilot.license }}</td>
                   <td class="py-4 px-6">
                     <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600">
-                      <i class="fa-solid fa-shield-halved"></i> 平台强制险随单自动附加
+                      <i class="fa-solid fa-shield-halved"></i> 随单自动附加生效
                     </span>
                   </td>
-                  <td class="py-4 px-6 font-bold text-emerald-600">{{ pilot.credit }} 分</td>
+                  <td class="py-4 px-6 font-bold text-emerald-600 font-mono">{{ pilot.credit }} 分</td>
                   <td class="py-4 px-6 text-xs font-semibold text-slate-800">
                     企业 30% : 飞手 70%
                   </td>
                   <td class="py-4 px-6 text-right">
-                    <button class="text-xs text-blue-600 hover:text-blue-800 font-semibold" @click="showToast('已为飞手 ' + pilot.name + ' 分派新任务工单')">指派工单</button>
+                    <button class="text-xs text-blue-600 hover:text-blue-800 font-bold" @click="dispatchTask(pilot)">指派工单</button>
                   </td>
                 </tr>
               </tbody>
@@ -214,27 +257,31 @@
 
       <!-- ================= 3. 企业发单与合同存证 ================= -->
       <div v-if="currentNav === 'orders'" class="space-y-6">
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <div class="flex justify-between items-center mb-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 class="text-xl font-bold text-slate-900">企业大型飞行需求发布与合同管理</h2>
-              <p class="text-xs text-slate-500 mt-1">在线签署具备法律效力的《无人机技术服务电子合同》（内置防跳单与安全免责条款）</p>
+              <h2 class="text-xl font-bold text-slate-900">企业大型飞行需求发包与电子合同管理</h2>
+              <p class="text-xs text-slate-500 mt-1">在线签署具备法律效力的《无人机技术服务电子合同》（内置五维防跳单违约金与安全免责条款）</p>
             </div>
-            <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg" @click="showToast('已新建航测大单合同草稿')">
-              <i class="fa-solid fa-file-contract mr-1"></i> 新建项目制合同
+            <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition" @click="showToast('已创建新航测大单合同草稿，等待双方签署', 'success', '合同创建')">
+              <i class="fa-solid fa-file-contract mr-1"></i> 新建项目制电子合同
             </button>
           </div>
 
           <div class="space-y-3">
-            <div class="border border-slate-200 rounded-xl p-4 flex justify-between items-center bg-slate-50/50">
-              <div>
-                <div class="font-bold text-slate-900 text-base">【已签署】德阳市中江县 50km 高压输电线路巡检项目</div>
-                <div class="text-xs text-slate-500 mt-1">合同编号：HT-20260815-0982 · 金额 ¥38,000 · 资金已托管在招商银行专户</div>
+            <div class="border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/60 hover:bg-white hover:shadow-sm transition">
+              <div class="space-y-1">
+                <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                  <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">履约中</span>
+                  【已签署】德阳市中江县 50km 高压输电线路精细化巡检项目
+                </div>
+                <div class="text-xs text-slate-500">
+                  合同编号：<strong class="font-mono text-slate-700">HT-20260815-0982</strong> · 标的金额 <strong class="font-mono text-blue-600">¥38,000.00</strong> · 资金已全额托管在招商银行专户
+                </div>
               </div>
-              <div class="flex items-center gap-3">
-                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">履约中</span>
-                <button class="text-xs text-blue-600 font-semibold hover:underline" @click="showToast('调阅 e签宝 电子存证证书')">查看电子存证</button>
-              </div>
+              <button class="text-xs text-blue-600 hover:underline font-semibold flex-shrink-0" @click="showToast('已调阅电子存证证书（可信时间戳 + 哈希防篡改认证）', 'info', '存证调阅')">
+                调阅电子存证证书
+              </button>
             </div>
           </div>
         </div>
@@ -242,20 +289,20 @@
 
       <!-- ================= 4. 企业店铺与商品上架 ================= -->
       <div v-if="currentNav === 'store'" class="space-y-6">
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <div class="flex justify-between items-center mb-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 class="text-xl font-bold text-slate-900">企业店铺商品与设备管理（B端商城后台）</h2>
-              <p class="text-xs text-slate-500 mt-1">支持品牌全新无人机、官方配件、行业载荷上架，平台交易佣金 3%~5%</p>
+              <h2 class="text-xl font-bold text-slate-900">企业店铺与设备耗材管理（B端商城后台）</h2>
+              <p class="text-xs text-slate-500 mt-1">支持品牌全新无人机、官方电池配件、行业测绘载荷上架，平台交易技术服务费 3%~5%</p>
             </div>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg" @click="showToast('已打开商品批量上架工作台')">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition" @click="showToast('已打开商品批量上架向导', 'info')">
               <i class="fa-solid fa-plus mr-1"></i> 上架全新商品 / 载荷
             </button>
           </div>
 
           <div class="border border-slate-200 rounded-xl overflow-hidden">
-            <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
                 <tr>
                   <th class="py-3.5 px-6">商品名称</th>
                   <th class="py-3.5 px-6">分类 / 品牌</th>
@@ -266,14 +313,14 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-slate-700">
-                <tr class="hover:bg-slate-50 transition">
-                  <td class="py-4 px-6 font-semibold">大疆 DJI Matrice 350 RTK 行业机</td>
-                  <td class="py-4 px-6 text-xs text-slate-500">全新整机 / 大疆官方授权</td>
-                  <td class="py-4 px-6 font-bold text-blue-600">¥49,888.00</td>
-                  <td class="py-4 px-6">5 台</td>
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="py-4 px-6 font-bold text-slate-900 text-sm">大疆 DJI Matrice 350 RTK 行业机套装</td>
+                  <td class="py-4 px-6 text-slate-500">全新整机 / 大疆官方正品</td>
+                  <td class="py-4 px-6 font-bold text-blue-600 font-mono">¥49,888.00</td>
+                  <td class="py-4 px-6 font-mono">5 台</td>
                   <td class="py-4 px-6"><span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">在售中</span></td>
                   <td class="py-4 px-6 text-right">
-                    <button class="text-xs text-blue-600 font-semibold hover:underline" @click="showToast('编辑商品SKU与价格')">编辑</button>
+                    <button class="text-xs text-blue-600 font-semibold hover:underline" @click="showToast('已进入 SKU 价格与库存编辑工作台', 'info')">编辑</button>
                   </td>
                 </tr>
               </tbody>
@@ -286,20 +333,20 @@
       <div v-if="currentNav === 'finance'" class="space-y-6">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
           <h2 class="text-xl font-bold text-slate-900 mb-4">企业对公账单与飞手绩效分润中心</h2>
-          <div class="grid grid-cols-3 gap-6 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
               <div class="text-xs text-slate-500">可提现对公结算余额</div>
-              <div class="text-2xl font-bold text-emerald-600 mt-1">¥92,400.00</div>
+              <div class="text-2xl font-bold text-emerald-600 mt-1 font-mono">¥92,400.00</div>
               <div class="text-xs text-slate-400 mt-1">招商银行成都高新支行</div>
             </div>
             <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
               <div class="text-xs text-slate-500">待发放飞手内部绩效佣金</div>
-              <div class="text-2xl font-bold text-blue-600 mt-1">¥48,600.00</div>
+              <div class="text-2xl font-bold text-blue-600 mt-1 font-mono">¥48,600.00</div>
               <div class="text-xs text-slate-400 mt-1">涉及 12 名机组成员</div>
             </div>
             <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
               <div class="text-xs text-slate-500">已申请 13% 增值税专票</div>
-              <div class="text-2xl font-bold text-slate-700 mt-1">¥142,000.00</div>
+              <div class="text-2xl font-bold text-slate-700 mt-1 font-mono">¥142,000.00</div>
               <div class="text-xs text-slate-400 mt-1">税额 ¥18,460.00</div>
             </div>
           </div>
@@ -311,7 +358,7 @@
 </div>
 
 <script>
-  const { createApp, ref } = Vue;
+  const { createApp, ref, computed } = Vue;
 
   createApp({
     setup() {
@@ -320,9 +367,37 @@
       const navTitles = {
         dashboard: '企业运营总览',
         fleet: '机组编队与飞手调度',
-        orders: '企业发单与合同存证',
+        orders: '发包需求与合同存证',
         store: '企业店铺与商品上架',
         finance: '绩效分润与专票对账'
+      };
+
+      const toast = ref({
+        show: false,
+        title: '',
+        message: '',
+        type: 'success'
+      });
+
+      const toastIcon = computed(() => {
+        switch (toast.value.type) {
+          case 'success': return 'fa-solid fa-circle-check';
+          case 'warning': return 'fa-solid fa-triangle-exclamation';
+          case 'danger': return 'fa-solid fa-circle-xmark';
+          default: return 'fa-solid fa-circle-info';
+        }
+      });
+
+      const showToast = (message, type = 'success', title = '企业通知') => {
+        toast.value = {
+          show: true,
+          title,
+          message,
+          type
+        };
+        setTimeout(() => {
+          toast.value.show = false;
+        }, 3600);
       };
 
       const fleetList = ref([
@@ -339,16 +414,19 @@
         { id: 4, name: '陈天明', phone: '136****8871', team: '航测二组', role: '数据处理员', license: 'CAAC-UAV-2026081190', credit: 97 }
       ]);
 
-      const showToast = (msg) => {
-        alert(msg);
+      const dispatchTask = (pilot) => {
+        showToast(`已向机长 ${pilot.name} 下发新任务工单，分润比例已锁定 (企业 30% : 飞手 70%)！`, 'success', '工单指派成功');
       };
 
       return {
         currentNav,
         navTitles,
+        toast,
+        toastIcon,
+        showToast,
         fleetList,
         pilotsList,
-        showToast
+        dispatchTask
       };
     }
   }).mount('#app');
