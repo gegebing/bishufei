@@ -37,9 +37,9 @@ const diag = computed(() => diagnose(faultDesc.value))
 
 /* ===== 维修商报价(智能匹配 3 家) ===== */
 const quotes = [
-  { vendor: '大疆授权服务中心 (成都)', level: '品牌授权', levelCls: 'bs-badge--gold', price: 680, warranty: 90 },
-  { vendor: '极飞四川维修中心', level: '高级', levelCls: 'bs-badge--primary', price: 520, warranty: 90 },
-  { vendor: '成都翼修电子科技', level: '中级', levelCls: 'bs-badge--default', price: 380, warranty: 30 },
+  { vendor: '大疆授权服务中心 (毕节)', level: '品牌授权', levelCls: 'bs-badge--gold', price: 680, warranty: 90 },
+  { vendor: '毕节市农机装备维修中心', level: '高级', levelCls: 'bs-badge--primary', price: 520, warranty: 90 },
+  { vendor: '织金翼修电子科技', level: '中级', levelCls: 'bs-badge--default', price: 380, warranty: 30 },
 ]
 const vendorIndex = ref(1)
 

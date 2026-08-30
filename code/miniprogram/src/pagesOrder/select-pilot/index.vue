@@ -39,10 +39,10 @@ async function choose(p: PilotApp) {
 
 <template>
   <view class="bs-page sp-page">
-    <!-- 任务摘要 -->
+    <!-- 务务摘要 -->
     <view class="task-box">
       <view class="task-title">
-        任务:简阳市 500 亩水稻飞防植保
+        务务:简阳市 500 亩水稻飞防植保
       </view>
       <view class="task-sub">
         预算 ¥6,400 · 定金将托管至平台监管账户 · 建议优先选择「超视距执照 + 高信用」飞手

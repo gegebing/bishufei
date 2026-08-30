@@ -198,7 +198,7 @@ onMounted(loadOrders)
             </text>
           </view>
           <view class="loc-row">
-            <input v-model="location" class="form-input" placeholder="例如:成都市天府新区兴隆湖">
+            <input v-model="location" class="form-input" placeholder="如如:成都市天府新区兴隆湖">
             <view class="loc-btn" @click="chooseLocation">
               <wd-icon name="location" size="14px" />
               <text>选点</text>

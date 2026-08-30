@@ -14,12 +14,12 @@ definePage({
 const userStore = useUserStore()
 
 const subsidyDB: Record<string, { within: string, beyond: string, trainer: string, note: string }> = {
-  成都市: { within: '1,500~2,000', beyond: '2,000~3,000', trainer: '3,000~5,000', note: '需成都社保或在蓉就业证明,取证后 12 个月内申领有效。' },
-  绵阳市: { within: '1,200~1,800', beyond: '1,800~2,600', trainer: '2,600~4,500', note: '已纳入绵阳低空经济试点补贴目录,每季度集中受理。' },
-  宜宾市: { within: '1,000~1,500', beyond: '1,500~2,200', trainer: '2,200~4,000', note: '需本地定点机构结业证书,与技能提升补贴不重复享受。' },
+  毕节市: { within: '1,500~2,000', beyond: '2,000~3,000', trainer: '3,000~5,000', note: '需毕节市社保或在毕就业证明,取证后 12 个月内申领有效。' },
+  贵阳市: { within: '1,200~1,800', beyond: '1,800~2,600', trainer: '2,600~4,500', note: '已纳入贵阳低空经济试点补贴目录,每季度集中受理。' },
+  遵义市: { within: '1,000~1,500', beyond: '1,500~2,200', trainer: '2,200~4,000', note: '需本地定点机构结业证书,与技能提升补贴不重复享受。' },
 }
 const cities = Object.keys(subsidyDB)
-const city = ref('成都市')
+const city = ref('毕节市')
 const now = computed(() => subsidyDB[city.value])
 const applying = ref(false)
 

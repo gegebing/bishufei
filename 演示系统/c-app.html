@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -380,7 +380,7 @@
     /* ===== 金刚区 ===== */
     .grid-card { padding: 14px 8px 8px; }
     .grid-menu {
-      display: grid; grid-template-columns: repeat(4, 1fr);
+      display: grid; grid-template-columns: repeat(5, 1fr);
       gap: 14px 6px;
     }
     .grid-item {
@@ -388,9 +388,9 @@
       cursor: pointer; text-align: center;
     }
     .grid-icon {
-      width: 48px; height: 48px; border-radius: 16px;
+      width: 46px; height: 46px; border-radius: 15px;
       display: flex; justify-content: center; align-items: center;
-      font-size: 20px;
+      font-size: 18px;
       background: linear-gradient(145deg, var(--tile-a), var(--tile-b));
       color: var(--tile-fg);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.65), 0 4px 10px rgba(15,42,90,.07);
@@ -976,7 +976,7 @@
         <!-- 云端晴空 Hero -->
         <div class="home-hero">
           <div class="hh-top">
-            <div class="city-picker"><i class="fa-solid fa-location-dot"></i> 成都市 <i class="fa-solid fa-angle-down"></i></div>
+            <div class="city-picker"><i class="fa-solid fa-location-dot"></i> 毕节市 <i class="fa-solid fa-angle-down"></i></div>
             <i class="fa-regular fa-bell hh-bell" @click="showToast('暂无新系统通知')"></i>
           </div>
           <div class="hh-brand">BISSU FLIGHT · 低空飞行服务生态</div>
@@ -1002,14 +1002,14 @@
             <span class="badge badge-primary" v-else-if="userRole === 'student'">技能班在读</span>
           </div>
           <div class="todo-body" v-if="userRole === 'pilot'">
-            <div>今日待作业：<strong>成都市温江区 220kV 电力巡检</strong></div>
+            <div>今日待作业：<strong>毕节市七星关区 220kV 电力巡检</strong></div>
             <div class="todo-foot">
               <span class="todo-hint warn"><i class="fa-solid fa-triangle-exclamation"></i> 需在作业前回传 UOM 批文(保险已自动附加)</span>
               <button class="btn btn-primary btn-sm" @click="openOrderDetail(currentActiveOrder)">进入履约</button>
             </div>
           </div>
           <div class="todo-body" v-else-if="userRole === 'client'">
-            <div>发布中的需求：<strong>简阳市 500 亩水稻飞防植保</strong></div>
+            <div>发布中的需求：<strong>毕节市威宁县 500 亩马铃薯飞防植保</strong></div>
             <div class="todo-foot">
               <span class="todo-hint info">已有 3 位持证飞手申请接单</span>
               <button class="btn btn-accent btn-sm" @click="openSelectPilot">查看匹配</button>
@@ -1024,40 +1024,48 @@
           </div>
         </div>
 
-        <!-- 金刚区 8 宫格 -->
+        <!-- 金刚区 10 宫格 (v1.1 基线:2行5列) -->
         <div class="card grid-card reveal" style="--d: 110ms;">
           <div class="grid-menu">
-            <div class="grid-item" @click="currentTab = 'orders'">
-              <div class="grid-icon" style="--tile-a:#DCEAFF; --tile-b:#F2F8FF; --tile-fg:#1677FF;"><i class="fa-solid fa-satellite-dish"></i></div>
-              <span>接单广场</span>
-            </div>
-            <div class="grid-item" @click="currentTab = 'orders'; isPublishMode = true">
-              <div class="grid-icon" style="--tile-a:#FFE8CF; --tile-b:#FFF6EC; --tile-fg:#F56A00;"><i class="fa-solid fa-paper-plane"></i></div>
-              <span>发布需求</span>
-            </div>
-            <div class="grid-item" @click="currentTab = 'learn'; learnTab = 'caac'">
-              <div class="grid-icon" style="--tile-a:#FFF0C2; --tile-b:#FFFAE8; --tile-fg:#B27B00;"><i class="fa-solid fa-id-card"></i></div>
-              <span>CAAC考证</span>
-            </div>
             <div class="grid-item" @click="currentTab = 'learn'; learnTab = 'skill'">
-              <div class="grid-icon" style="--tile-a:#CFF5E4; --tile-b:#EFFCF5; --tile-fg:#00A06B;"><i class="fa-solid fa-graduation-cap"></i></div>
+              <div class="grid-icon" style="--tile-a:#DDEBFF; --tile-b:#F0F7FF; --tile-fg:#1677FF;"><i class="fa-solid fa-graduation-cap"></i></div>
               <span>技能培训</span>
             </div>
-            <div class="grid-item" @click="currentTab = 'mall'">
-              <div class="grid-icon" style="--tile-a:#E9DFFB; --tile-b:#F7F3FE; --tile-fg:#722ED1;"><i class="fa-solid fa-box-open"></i></div>
-              <span>装备商城</span>
+            <div class="grid-item" @click="currentTab = 'learn'; learnTab = 'caac'">
+              <div class="grid-icon" style="--tile-a:#DFF6EA; --tile-b:#F2FBF6; --tile-fg:#00A06B;"><i class="fa-solid fa-id-card"></i></div>
+              <span>CAAC考证</span>
             </div>
-            <div class="grid-item" @click="openCheckReportModal">
-              <div class="grid-icon" style="--tile-a:#C9F2F2; --tile-b:#EBFBFB; --tile-fg:#0E9E9E;"><i class="fa-solid fa-shield-halved"></i></div>
-              <span>官方验机</span>
+            <div class="grid-item" @click="showToast('UOM 飞手登记:二期开放(对接民航局实名登记)')">
+              <div class="grid-icon" style="--tile-a:#ECEAF9; --tile-b:#F7F5FE; --tile-fg:#722ED1;"><i class="fa-solid fa-user-pen"></i></div>
+              <span>飞手登记</span>
+            </div>
+            <div class="grid-item" @click="showToast('UOM 机器登记:二期开放(SN码关联设备档案)')">
+              <div class="grid-icon" style="--tile-a:#DFF3F3; --tile-b:#F0FAFA; --tile-fg:#0E9E9E;"><i class="fa-solid fa-microchip"></i></div>
+              <span>机器登记</span>
+            </div>
+            <div class="grid-item" @click="currentTab = 'orders'; isPublishMode = true">
+              <div class="grid-icon" style="--tile-a:#FFEBD8; --tile-b:#FFF6EC; --tile-fg:#F56A00;"><i class="fa-solid fa-paper-plane"></i></div>
+              <span>需求发布</span>
+            </div>
+            <div class="grid-item" @click="currentTab = 'orders'">
+              <div class="grid-icon" style="--tile-a:#FFF4D6; --tile-b:#FFFAE8; --tile-fg:#B27B00;"><i class="fa-solid fa-bolt"></i></div>
+              <span>抢单大厅</span>
+            </div>
+            <div class="grid-item" @click="currentTab = 'mall'; mallTab = 'secondhand'">
+              <div class="grid-icon" style="--tile-a:#DDEBFF; --tile-b:#F0F7FF; --tile-fg:#1677FF;"><i class="fa-solid fa-cart-shopping"></i></div>
+              <span>二手交易</span>
             </div>
             <div class="grid-item" @click="showRepairModal = true">
-              <div class="grid-icon" style="--tile-a:#FBDCEF; --tile-b:#FDF0F8; --tile-fg:#D62E8C;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+              <div class="grid-icon" style="--tile-a:#E3F5E9; --tile-b:#F3FBF6; --tile-fg:#00A06B;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
               <span>维修服务</span>
             </div>
-            <div class="grid-item" @click="openKfModal">
-              <div class="grid-icon" style="--tile-a:#DCF5CE; --tile-b:#F2FBEA; --tile-fg:#46A018;"><i class="fa-brands fa-weixin"></i></div>
-              <span>在线客服</span>
+            <div class="grid-item" @click="currentTab = 'mall'; mallTab = 'new'">
+              <div class="grid-icon" style="--tile-a:#F9E2F1; --tile-b:#FDF0F8; --tile-fg:#D62E8C;"><i class="fa-solid fa-bag-shopping"></i></div>
+              <span>线上商城</span>
+            </div>
+            <div class="grid-item" @click="currentTab = 'mall'; mallTab = 'new'; showToast('机器配件类目:二期开放')">
+              <div class="grid-icon" style="--tile-a:#E1EEFF; --tile-b:#F1F8FF; --tile-fg:#0958D9;"><i class="fa-solid fa-box-open"></i></div>
+              <span>机器配件</span>
             </div>
           </div>
         </div>
@@ -1077,7 +1085,7 @@
 
         <div class="card order-card lift reveal" style="--d: 290ms;" @click="openOrderDetail(orderList[0])">
           <div class="oc-head">
-            <div class="oc-title">成都市温江区 220kV 电力巡检</div>
+            <div class="oc-title">毕节市七星关区 220kV 电力巡检</div>
             <div class="oc-price num"><span class="cur">¥</span>3,500</div>
           </div>
           <div class="oc-badges">
@@ -1086,7 +1094,7 @@
             <span class="badge badge-gold">要求超视距执照</span>
           </div>
           <div class="oc-info">
-            <div><i class="fa-solid fa-location-dot"></i> 温江区万春镇 5基铁塔精细巡检</div>
+            <div><i class="fa-solid fa-location-dot"></i> 七星关区岔河镇 5基铁塔精细巡检</div>
             <div><i class="fa-regular fa-clock"></i> 2026-08-28 09:00 开始</div>
           </div>
           <div class="oc-foot">
@@ -1097,7 +1105,7 @@
 
         <div class="card order-card lift reveal" style="--d: 340ms;" @click="openOrderDetail(orderList[1])">
           <div class="oc-head">
-            <div class="oc-title">崇州市 800亩 晚稻飞防农药喷洒</div>
+            <div class="oc-title">毕节市大方县 600亩 辣椒飞防植保</div>
             <div class="oc-price num"><span class="cur">¥</span>6,400</div>
           </div>
           <div class="oc-badges">
@@ -1106,7 +1114,7 @@
             <span class="badge badge-primary">大疆T50/极飞P100</span>
           </div>
           <div class="oc-info">
-            <div><i class="fa-solid fa-location-dot"></i> 崇州市隆兴镇 现代农业示范区</div>
+            <div><i class="fa-solid fa-location-dot"></i> 大方县羊场镇高原特色农业园</div>
             <div><i class="fa-regular fa-clock"></i> 2026-08-29 全天</div>
           </div>
           <div class="oc-foot">
@@ -1177,7 +1185,7 @@
             <div class="field">
               <label class="field-label">作业地点 (地图选点) <b>*</b></label>
               <div class="loc-row">
-                <input type="text" class="form-input" v-model="publishForm.location" placeholder="例如:成都市天府新区兴隆湖">
+                <input type="text" class="form-input" v-model="publishForm.location" placeholder="例如:毕节市金海湖新区">
                 <button class="btn btn-secondary btn-sm" @click="simulateGisMap"><i class="fa-solid fa-map-pin"></i> 选点</button>
               </div>
             </div>
@@ -1227,7 +1235,7 @@
               </div>
               <div class="course-main">
                 <div class="course-title">无人机农业植保飞防应用技能班</div>
-                <div class="course-org">定点机构：四川省无人机职业技能实训基地</div>
+                <div class="course-org">定点机构：毕节市无人机职业技能实训基地</div>
                 <div class="oc-badges" style="margin-bottom: 0;">
                   <span class="badge badge-success">人社直补 ¥0</span>
                   <span class="badge badge-primary">24总课时</span>
@@ -1248,7 +1256,7 @@
               </div>
               <div class="course-main">
                 <div class="course-title">电力架空线路巡检与热成像分析班</div>
-                <div class="course-org">定点机构：成都市通用航空职业技术学院</div>
+                <div class="course-org">定点机构：毕节市通用航空职业技术学院</div>
                 <div class="oc-badges" style="margin-bottom: 0;">
                   <span class="badge badge-success">人社直补 ¥0</span>
                   <span class="badge badge-primary">32总课时</span>
@@ -1346,7 +1354,7 @@
               </div>
             </div>
             <div class="product-foot">
-              <span class="product-seller">卖家：成都某测绘工作室 (实名)</span>
+              <span class="product-seller">卖家：毕节某测绘工作室 (实名)</span>
               <button class="btn btn-secondary btn-sm" @click.stop="openCheckReportModal">查看42项验机报告</button>
             </div>
           </div>
@@ -1402,7 +1410,7 @@
                 <span class="badge badge-gold"><i class="fa-solid fa-circle-check"></i> 民航CAAC认证</span>
               </div>
               <div class="mine-license num">执照编号：CAAC-UAV-2026089912</div>
-              <div class="mine-crew">所属机组：成都市天府低空巡检一组 (机长)</div>
+              <div class="mine-crew">所属机组：毕节市低空巡检一组 (机长)</div>
             </div>
           </div>
         </div>
@@ -1493,7 +1501,7 @@
           <div class="info-rows">
             <div><i class="fa-solid fa-location-dot"></i> 作业地点：{{ selectedOrder.location }}</div>
             <div><i class="fa-regular fa-clock"></i> 预定时间：{{ selectedOrder.time }}</div>
-            <div><i class="fa-solid fa-user-check"></i> 需求发包方：成都市某电力工程集团 (对公结算)</div>
+            <div><i class="fa-solid fa-user-check"></i> 需求发包方：贵州电网毕节供电局 (对公结算)</div>
           </div>
           <div class="phone-row">
             <span class="phone-note"><i class="fa-solid fa-lock"></i> 号码双向脱敏 · IM 全程存证</span>
@@ -1596,7 +1604,7 @@
 
         <div class="card" style="margin-top: 12px;">
           <div class="uom-title"><i class="fa-solid fa-screwdriver-wrench" style="color: #D62E8C;"></i> 工单 RO-20260825-018</div>
-          <div class="uom-sub">承修：极飞四川维修中心（高级维修商） · 预付款 ¥520 已托管</div>
+          <div class="uom-sub">承修：毕节市低空装备维修中心（高级维修商） · 预付款 ¥520 已托管</div>
 
           <div class="stepper compact">
             <div v-for="(s, i) in repairSteps" :key="s" class="step-node"
@@ -1672,7 +1680,7 @@
         </div>
 
         <div class="airspace-box" style="margin: 12px 16px 0;">
-          <div class="airspace-title"><i class="fa-solid fa-file-signature"></i> 任务：简阳市 500 亩水稻飞防植保</div>
+          <div class="airspace-title"><i class="fa-solid fa-file-signature"></i> 任务：毕节市威宁县 500 亩马铃薯飞防植保</div>
           <div class="airspace-body">预算 ¥6,400 · 定金将托管至平台监管账户 · 建议优先选择「超视距执照 + 高信用」飞手</div>
         </div>
 
@@ -1806,7 +1814,7 @@
         </div>
         <div class="check-meta">
           检测机型：DJI Mavic 3E | 序列号：<span class="num">1581F4AA9812</span><br>
-          检测机构：毕数飞行官方无人机检测实验室 (成都市)
+          检测机构：毕数飞行官方无人机检测实验室 (毕节市)
         </div>
         <div>
           <div class="check-row">
@@ -1859,15 +1867,15 @@
         <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">智能匹配维修商 (3家报价):</div>
         <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
           <div class="check-row">
-            <span>大疆授权服务中心 (成都) <span class="badge badge-gold" style="margin-left: 4px;">品牌授权</span></span>
+            <span>大疆授权服务中心 (毕节) <span class="badge badge-gold" style="margin-left: 4px;">品牌授权</span></span>
             <span class="check-val ok num">¥680 · 质保90天</span>
           </div>
           <div class="check-row">
-            <span>极飞四川维修中心 <span class="badge badge-primary" style="margin-left: 4px;">高级</span></span>
+            <span>毕节市低空装备维修中心 <span class="badge badge-primary" style="margin-left: 4px;">高级</span></span>
             <span class="check-val ok num">¥520 · 质保90天</span>
           </div>
           <div class="check-row">
-            <span>成都翼修电子科技 <span class="badge badge-default" style="margin-left: 4px;">中级</span></span>
+            <span>织金翼修电子科技 <span class="badge badge-default" style="margin-left: 4px;">中级</span></span>
             <span class="check-val ok num">¥380 · 质保30天</span>
           </div>
         </div>
@@ -1976,9 +1984,9 @@
           <i class="fa-solid fa-xmark modal-close" @click="showContractModal = false"></i>
         </div>
         <div class="check-meta" style="margin-top: 10px;">
-          甲方（需求方）：成都市某电力工程集团<br>
+          甲方（需求方）：贵州电网毕节供电局<br>
           乙方（飞手）：王建军 <span class="num">138****1234</span>（已实名核验）<br>
-          服务内容：220kV 输电线路精细巡检（温江区万春镇）
+          服务内容：220kV 输电线路精细巡检（七星关区岔河镇）
         </div>
         <div class="contract-clause">
           <i class="fa-solid fa-scale-balanced"></i> <strong>反跳单条款（显著提示）</strong>：甲乙双方确认本次服务通过毕数飞行平台撮合达成,任何一方不得引导或接受私下交易;违者须向平台支付订单金额 <strong>30%</strong> 的违约金,平台有权扣除保证金并公示违规记录。
@@ -2076,43 +2084,43 @@
 
       const publishForm = ref({
         type: '电力巡检',
-        location: '成都市天府新区兴隆湖科创岛',
+        location: '毕节市七星关区金海湖新区',
         price: 4200
       });
 
       const orderList = ref([
         {
           id: 'ORD20260825001',
-          title: '成都市温江区 220kV 电力巡检',
+          title: '毕节市七星关区 220kV 电力巡检',
           price: 3500,
           type: '巡检',
           isControlled: true,
           licenseReq: '超视距执照',
-          location: '成都市温江区万春镇',
+          location: '毕节市七星关区岔河镇',
           time: '2026-08-28 09:00',
-          publisher: '成都市某电力工程集团'
+          publisher: '贵州电网毕节供电局'
         },
         {
           id: 'ORD20260825002',
-          title: '崇州市 800亩 晚稻飞防农药喷洒',
+          title: '毕节市大方县 600亩 辣椒飞防植保',
           price: 6400,
           type: '植保',
           isControlled: false,
           licenseReq: '视距内/超视距',
           location: '崇州市隆兴镇现代农业园',
           time: '2026-08-29 全天',
-          publisher: '崇州市金穗农机合作社'
+          publisher: '大方县金穗农机合作社'
         },
         {
           id: 'ORD20260825003',
-          title: '天府新区 兴隆湖 1:500 倾斜摄影三维建模',
+          title: '毕节市金海湖新区 1:500 倾斜摄影三维建模',
           price: 9800,
           type: '测绘',
           isControlled: true,
           licenseReq: '多旋翼超视距',
-          location: '成都市天府新区兴隆湖',
+          location: '毕节市金海湖新区',
           time: '2026-08-30 08:30',
-          publisher: '四川省空间地理信息测绘院'
+          publisher: '毕节市测绘地理信息中心'
         }
       ]);
 
@@ -2155,7 +2163,7 @@
       };
 
       const simulateGisMap = () => {
-        showToast('地图选点成功：成都市天府新区 (适飞区)');
+        showToast('地图选点成功：毕节市金海湖新区 (适飞区)');
       };
 
       const submitPublishOrder = () => {
@@ -2201,11 +2209,11 @@
 
       /* ===== V3.0 补齐:人社证书补贴政策查询(4.2.5) ===== */
       const showSubsidyModal = ref(false);
-      const subsidyCity = ref('成都市');
+      const subsidyCity = ref('毕节市');
       const subsidyDB = {
-        '成都市': { within: '1,500~2,000', beyond: '2,000~3,000', trainer: '3,000~5,000', note: '需成都社保或在蓉就业证明,取证后 12 个月内申领有效。' },
-        '绵阳市': { within: '1,200~1,800', beyond: '1,800~2,600', trainer: '2,600~4,500', note: '已纳入绵阳低空经济试点补贴目录,每季度集中受理。' },
-        '宜宾市': { within: '1,000~1,500', beyond: '1,500~2,200', trainer: '2,200~4,000', note: '需本地定点机构结业证书,与技能提升补贴不重复享受。' }
+        '毕节市': { within: '1,500~2,000', beyond: '2,000~3,000', trainer: '3,000~5,000', note: '需毕节市社保或在毕就业证明,取证后 12 个月内申领有效。' },
+        '贵阳市': { within: '1,200~1,800', beyond: '1,800~2,600', trainer: '2,600~4,500', note: '已纳入贵阳低空经济试点补贴目录,每季度集中受理。' },
+        '遵义市': { within: '1,000~1,500', beyond: '1,500~2,200', trainer: '2,200~4,000', note: '需本地定点机构结业证书,与技能提升补贴不重复享受。' }
       };
       const subsidyNow = computed(() => subsidyDB[subsidyCity.value]);
       const requestSubsidy = () => {
@@ -2240,7 +2248,7 @@
       const pilotApps = ref([
         { name: '李国强', license: '超视距执照', cls: 'badge-gold', org: '天府低空巡检一组', time: '2小时前', quote: 6100, credit: 99, orders: 217, rate: '99.2%', resp: '5分钟', c1: '#1677FF', c2: '#69B4FF' },
         { name: '周天磊', license: '超视距执照', cls: 'badge-gold', org: '个人飞手 · 押金¥2000', time: '3小时前', quote: 6300, credit: 96, orders: 88, rate: '98.1%', resp: '12分钟', c1: '#00A06B', c2: '#5FE3B3' },
-        { name: '吴静怡', license: '视距内执照', cls: 'badge-default', org: '蜀鹰农业植保队', time: '5小时前', quote: 5800, credit: 92, orders: 46, rate: '97.3%', resp: '28分钟', c1: '#722ED1', c2: '#B37FEB' }
+        { name: '吴静怡', license: '视距内执照', cls: 'badge-default', org: '黔西植保飞防队', time: '5小时前', quote: 5800, credit: 92, orders: 46, rate: '97.3%', resp: '28分钟', c1: '#722ED1', c2: '#B37FEB' }
       ]);
       const chosenPilot = ref('');
       const openSelectPilot = () => {

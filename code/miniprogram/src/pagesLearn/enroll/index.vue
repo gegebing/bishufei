@@ -173,7 +173,7 @@ async function confirmPay() {
         <view class="pay-row">
           <text>结算方式</text>
           <text class="strong">
-            报名即分账 · 平台服务费 20% 即结
+            报名即分账 · 平台服务费 20% 次日结算
           </text>
         </view>
       </view>
@@ -227,7 +227,7 @@ async function confirmPay() {
         {{ paying ? '支付中...' : `微信支付 ¥${payAmount.toLocaleString()}` }}
       </view>
       <view class="bar-note">
-        支付成功后平台留存 20%,机构实时到账 80%,分账凭证支持双方对账
+        支付成功后平台留存 20%,机构 T+1 到账 80%,分账凭证支持双方对账
       </view>
     </view>
   </view>

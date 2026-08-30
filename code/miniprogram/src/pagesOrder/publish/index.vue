@@ -104,7 +104,7 @@ async function onSubmit() {
           </text>
         </view>
         <view class="loc-row">
-          <input v-model="location" class="form-input" type="text" placeholder="例如:成都市天府新区兴隆湖">
+          <input v-model="location" class="form-input" type="text" placeholder="如如:成都市天府新区兴隆湖">
           <view class="loc-btn" @click="onPickLocation">
             📍 选点
           </view>

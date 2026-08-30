@@ -77,7 +77,7 @@ function onSend() {
         <!-- 对方消息 -->
         <view v-else-if="!m.self" class="msg-row msg-row--left">
           <view class="avatar avatar--peer">
-            张
+            工
           </view>
           <view class="bubble bubble--left">
             {{ m.text }}

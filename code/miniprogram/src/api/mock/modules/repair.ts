@@ -10,7 +10,7 @@ const repairOrder = {
   sn: '1581F4AA9812',
   faultDesc: '图传信号断续,飞行 10 分钟后图传丢失',
   mode: 'mail',
-  vendor: '极飞四川维修中心(高级维修商)',
+  vendor: '飞飞四川维修中心(高级维修商)',
   /** 当前进度:0待检测 1检测中 2定方案 3维修中 4质检中 5已完成 */
   statusIndex: 3,
   parts: [

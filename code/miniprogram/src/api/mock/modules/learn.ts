@@ -8,7 +8,7 @@ const skillCourses = [
   {
     id: 'COURSE001',
     title: '无人机农业植保飞防应用技能班',
-    org: '四川省无人机职业技能实训基地',
+    org: '毕节市无人机职业技能实训基地',
     hours: 24,
     startDate: '2026-08-30',
     price: 0,
@@ -18,7 +18,7 @@ const skillCourses = [
   {
     id: 'COURSE002',
     title: '电力架空线路巡检与热成像分析班',
-    org: '成都市通用航空职业技术学院',
+    org: '毕节市通用航空职业技术学院',
     hours: 32,
     startDate: '2026-09-05',
     price: 0,
@@ -84,7 +84,7 @@ export default defineMock({
   /** POST /caac/enroll CAAC 报名缴费(body: classId) — 报名即分账 */
   '[POST]/caac/enroll': ({ data }: any) => {
     console.log('[Mock] CAAC报名缴费', data)
-    return generateMockData.baseResponse({ paid: true, orderId: `EXAM${Date.now()}` }, 2000, '支付成功,已按报名即分账结算')
+    return generateMockData.baseResponse({ paid: true, orderId: `EXAM${Date.now()}` }, 2000, '支付成功,已按分账规则 T+1 结算给机构')
   },
 
   /** POST /caac/subsidy/apply 人社证书补贴申请(body: licenseNo) */

@@ -98,7 +98,7 @@ function onEnroll() {
       <!-- 资金监管说明 -->
       <view class="bs-card">
         <view class="cd-sec-title">
-          报名即分账 · 资金监管
+          资金监管 · T+1 分账结算
         </view>
         <view class="cd-row policy-desc">
           报名费用支付至银行资金监管专户,平台按培训进度分批分账结算给机构;首考未过免费重培,中途退学按监管协议原路退回未消课时费用。

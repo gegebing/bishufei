@@ -84,8 +84,8 @@ async function onCheckIn() {
   submitting.value = true
   try {
     // 一期演示使用固定坐标,正式版接入 uni.getLocation 实时定位
-    await apiCheckIn(orderId.value, 30.57, 104.06)
-    uni.showToast({ title: '现场 GPS 打卡成功 (经纬度 104.06, 30.57),作业开始!', icon: 'none' })
+    await apiCheckIn(orderId.value, 27.30, 105.28)
+    uni.showToast({ title: '现场 GPS 打卡成功 (经纬度 105.28, 27.30),作业开始!', icon: 'none' })
   }
   finally {
     submitting.value = false
@@ -269,9 +269,9 @@ async function onCheckIn() {
           <wd-icon name="close" size="36rpx" color="#8C8C8C" @click="showContract = false" />
         </view>
         <view class="panel-meta">
-          甲方(需求方):成都市某电力工程集团
+          甲方(需求方):贵州电网毕节供电局
           乙方(飞手):王建军 138****1234(已实名核验)
-          服务内容:220kV 输电线路精细巡检(温江区万春镇)
+          服务内容:220kV 输电线路精细巡检(七星关区岔河镇)
         </view>
         <view class="clause-box">
           <text class="clause-strong">

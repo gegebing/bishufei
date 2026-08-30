@@ -15,7 +15,7 @@ const mockUser = {
   licenseNo: 'CAAC-UAV-2026089912',
   licenseLevel: '多旋翼 · 超视距驾驶员',
   realNameVerified: true,
-  crew: '成都市天府低空巡检一组(机长)',
+  crew: '毕节市低空巡检一组(机长)',
 }
 
 export default defineMock({
@@ -40,7 +40,7 @@ export default defineMock({
       pilot: {
         title: '飞手任务待办',
         badge: '待履约 1 笔',
-        content: '今日待作业:成都市温江区 220kV 电力巡检',
+        content: '今日待作业:毕节市七星关区 220kV 电力巡检',
         hint: '需在作业前回传 UOM 批文(保险已自动附加)',
         hintType: 'warn',
         actionText: '进入履约',
@@ -49,7 +49,7 @@ export default defineMock({
       client: {
         title: '用机需求管理',
         badge: '',
-        content: '发布中的需求:简阳市 500 亩水稻飞防植保',
+        content: '发布中的需求:毕节市威宁县 500 亩马铃薯飞防植保',
         hint: '已有 3 位持证飞手申请接单',
         hintType: 'info',
         actionText: '查看匹配',

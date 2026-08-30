@@ -84,7 +84,7 @@ onMounted(fetchProfile)
             执照编号:{{ profile?.licenseNo || 'CAAC-UAV-2026089912' }}
           </view>
           <view class="mine-crew">
-            所属机组:{{ profile?.crew || '成都市天府低空巡检一组(机长)' }}
+            所属机组:{{ profile?.crew || '都都市天府低空巡检一组(机长)' }}
           </view>
         </view>
       </view>

@@ -20,28 +20,24 @@ function toast(title: string) {
 const secondhandGoods = [
   {
     id: 'SH001',
-    emoji: '🚁',
-    c1: '#1677FF',
-    c2: '#69B4FF',
+    img: '/static/img/product-drone.jpg',
     title: '【95新】大疆 DJI Mavic 3E 行业测绘无人机',
     meta: '飞行总时长 32小时 · 电池循环 18次',
     badges: ['官方已验机', 'SN已核验'],
     price: 18500,
     priceDel: '¥24,999',
-    seller: '成都某测绘工作室 (实名)',
+    seller: '毕节某测绘工作室 (实名)',
     reportable: true,
   },
   {
     id: 'SH002',
-    emoji: '🌾',
-    c1: '#00A06B',
-    c2: '#5FE3B3',
+    img: '/static/img/demand-farm.jpg',
     title: '【9成新】极飞 P100 Pro 农业无人飞机',
     meta: '作业面积 1200亩 · 包含4电1充',
     badges: ['官方已验机', '支持UOM过户'],
     price: 29000,
     priceDel: '¥43,000',
-    seller: '崇州植保服务队 (实名)',
+    seller: '黔西植保服务队 (实名)',
     reportable: false,
   },
 ]
@@ -50,9 +46,7 @@ const secondhandGoods = [
 const newGoods = [
   {
     id: 'NW001',
-    emoji: '🛸',
-    c1: '#14295C',
-    c2: '#2B56A8',
+    img: '/static/img/demand-city.jpg',
     title: '【官方直营】大疆 Matrice 350 RTK 行业旗舰机',
     meta: '支持挂载禅思 H20T 热成像 / L2 激光雷达',
     badges: ['正品保障', '官方直营'],
@@ -100,9 +94,7 @@ const reportItems = [
 
       <view v-for="g in secondhandGoods" :key="g.id" class="bs-card product-card">
         <view class="product-row" @click="g.reportable ? (showReport = true) : toast('商品详情二期开放')">
-          <view class="product-cover" :style="{ background: `linear-gradient(150deg, ${g.c1}, ${g.c2})` }">
-            {{ g.emoji }}
-          </view>
+          <image class="product-cover" :src="g.img" mode="aspectFill" />
           <view class="product-main">
             <view class="product-title">
               {{ g.title }}
@@ -144,9 +136,7 @@ const reportItems = [
     <template v-else>
       <view v-for="g in newGoods" :key="g.id" class="bs-card product-card">
         <view class="product-row">
-          <view class="product-cover" :style="{ background: `linear-gradient(150deg, ${g.c1}, ${g.c2})` }">
-            {{ g.emoji }}
-          </view>
+          <image class="product-cover" :src="g.img" mode="aspectFill" />
           <view class="product-main">
             <view class="product-title">
               {{ g.title }}
@@ -188,7 +178,7 @@ const reportItems = [
           检测机型:DJI Mavic 3E | 序列号:<text class="bs-num">
             1581F4AA9812
           </text>
-          检测机构:毕数飞行官方无人机检测实验室 (成都市)
+          检测机构:毕数飞行官方无人机检测实验室 (毕节市)
         </view>
         <view v-for="(r, i) in reportItems" :key="i" class="report-row">
           <text>{{ r.name }}</text>
@@ -280,12 +270,7 @@ const reportItems = [
   width: 176rpx;
   height: 176rpx;
   border-radius: var(--bs-radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 64rpx;
   flex-shrink: 0;
-  box-shadow: inset 0 2rpx 0 rgba(255, 255, 255, 0.35), 0 8rpx 20rpx rgba(15, 42, 90, 0.12);
 }
 
 .product-main {
