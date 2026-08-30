@@ -60,7 +60,7 @@ async function onSubmit() {
       price: priceNum,
       ...coord.value,
     })
-    uni.showToast({ title: '需求发布成功!已托管定金至资金监管专户', icon: 'none' })
+    uni.showToast({ title: '需求发布成功!定金已由微信支付分账专户冻结托管', icon: 'none' })
     setTimeout(() => router.back(), 800)
   }
   finally {

@@ -191,7 +191,7 @@ async function onCheckIn() {
             ✍ 在线签署合同
           </view>
           <view v-else class="contract-ok">
-            ✓ 双方已签署,需求方定金已托管至监管账户
+            ✓ 双方已签署,需求方定金已由微信支付分账专户冻结托管
           </view>
         </view>
       </view>
@@ -283,7 +283,7 @@ async function onCheckIn() {
         <view class="panel-row">
           <text>合同金额</text>
           <text class="row-val">
-            ¥3,500(定金 40% 托管监管账户)
+            ¥3,500(定金 40% 微信分账专户冻结)
           </text>
         </view>
         <view class="panel-row">

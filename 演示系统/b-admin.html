@@ -85,8 +85,8 @@
         </span>
       </div>
       <div class="flex items-center justify-between text-[11px] text-slate-400">
-        <span>招行银企直联</span>
-        <span class="text-sky-400 font-mono">24h 监管中</span>
+        <span>微信支付分账直联</span>
+        <span class="text-emerald-400 font-mono">官方分账 V3 专线</span>
       </div>
     </div>
 
@@ -209,10 +209,10 @@
 
           <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
             <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl pointer-events-none"></div>
-            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">招行监管账户沉淀金</div>
+            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">微信分账冻结资金池</div>
             <div class="text-3xl font-extrabold text-indigo-400 mt-2 font-mono">¥2,450,000</div>
             <div class="text-xs text-slate-400 mt-2 flex items-center justify-between">
-              <span>履约保证金池</span>
+              <span>待分账托管资金</span>
               <span class="text-sky-400">资金安全 100%</span>
             </div>
           </div>
@@ -392,7 +392,7 @@
                   </td>
                   <td class="py-4 px-5">
                     <span class="text-amber-400 font-mono font-bold">{{ item.deposit }}</span>
-                    <div class="text-[10px] text-emerald-400">招行专户已冻结</div>
+                    <div class="text-[10px] text-emerald-400">微信商户已冻结</div>
                   </td>
                   <td class="py-4 px-5">
                     <span v-if="item.status === '待审核'" class="bg-amber-500/20 text-amber-400 font-bold px-2.5 py-1 rounded-full border border-amber-500/30">待审核</span>
@@ -476,7 +476,7 @@
                   </td>
                   <td class="py-4 px-5">{{ ent.contact }} ({{ ent.phone }})</td>
                   <td class="py-4 px-5 text-emerald-400 font-semibold">
-                    <i class="fa-solid fa-building-columns"></i> 招商银行小额打款已验真
+                    <i class="fa-brands fa-weixin"></i> 微信支付企业商户认证已验真
                   </td>
                   <td class="py-4 px-5">
                     <span class="bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded-full">已认证开通</span>
@@ -633,9 +633,9 @@
             <div>
               <h2 class="text-lg font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-coins text-amber-400"></i>
-                平台 5 大板块商业盈利清分与招商银行资金监管台账
+                平台 5 大板块商业盈利清分与微信支付官方分账清算台账
               </h2>
-              <p class="text-xs text-slate-400 mt-1">招商银行成都分行资金监管专户「银企直联」实时自动清分分账</p>
+              <p class="text-xs text-slate-400 mt-1">微信支付官方分账产品 (Profit Sharing)「资金冻结 + 自动清分」合规直连清算</p>
             </div>
             <button @click="showToast('已生成今日全平台财务对账单 Excel (含 13% 增值税专票抵扣明细)', 'success')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
               <i class="fa-solid fa-file-excel text-emerald-400"></i>
@@ -675,7 +675,7 @@
           <!-- Split-billing Ledger Table -->
           <div class="border border-slate-800 rounded-xl overflow-hidden">
             <div class="bg-slate-800/80 px-6 py-3 border-b border-slate-700 flex justify-between items-center text-xs font-semibold text-slate-300">
-              <span>今日自动清分分账流水明细 (招行银企直联)</span>
+              <span>今日自动清分分账流水明细 (微信支付分账产品)</span>
               <span class="text-emerald-400 font-mono">全部实时结算成功</span>
             </div>
 
@@ -761,7 +761,7 @@
           <div class="col-span-2">
             <span class="text-slate-500">履约保证金托管：</span>
             <span class="text-amber-400 font-bold font-mono">{{ activeAuditItem.deposit }}</span>
-            <span class="text-[10px] text-slate-400 ml-2">(招商银行监管账户已冻结成功)</span>
+            <span class="text-[10px] text-slate-400 ml-2">(微信商户分账专户已冻结成功)</span>
           </div>
         </div>
 
@@ -826,7 +826,7 @@
         <div class="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-amber-300 space-y-1">
           <div class="font-bold">依据《毕数飞行平台飞手入驻协议与防跳单规则》第 14 条：</div>
           <div class="text-[11px] text-slate-300">
-            1. 自动从其招行托管账户扣除履约保证金 <strong>¥1,000.00</strong> 作为平台违约金；<br>
+            1. 自动从其微信商户保证金专户扣除履约保证金 <strong>¥1,000.00</strong> 作为平台违约金；<br>
             2. 扣除平台信用分 <strong>50 分</strong>，限制其抢单与报价权限 <strong>30 天</strong>；<br>
             3. 自动生成《违约处理公示公告》在飞手端全员可见。
           </div>
@@ -881,7 +881,7 @@
         audit: '准入审核与维修商等级认证',
         uom: 'UOM合规与空域风控中心',
         antibypass: '五维一体防跳单监控与仲裁法庭',
-        finance: '财务分账与招商银行资金监管中心'
+        finance: '财务分账与微信支付清结算中枢'
       };
 
       // Toast notification state
@@ -1124,7 +1124,7 @@
           partnerRate: '85%',
           platformAmount: '5,700.00',
           platformRate: '15%',
-          settleChannel: '招行银企直联',
+          settleChannel: '微信支付分账(T+1)',
           time: '16:42:10'
         },
         {
@@ -1137,7 +1137,7 @@
           partnerRate: '80%',
           platformAmount: '1,600.00',
           platformRate: '20%',
-          settleChannel: '招行银企直联',
+          settleChannel: '微信支付分账(T+1)',
           time: '15:10:04'
         },
         {

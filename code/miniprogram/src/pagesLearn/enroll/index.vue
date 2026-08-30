@@ -75,7 +75,7 @@ async function confirmPay() {
   paying.value = true
   try {
     const res = await apiEnrollCaac(classId.value)
-    uni.showToast({ title: res.msg || `支付成功 ¥${payAmount.value.toLocaleString()} 至监管账户`, icon: 'none' })
+    uni.showToast({ title: res.msg || `支付成功 ¥${payAmount.value.toLocaleString()} (微信支付分账托管)`, icon: 'none' })
     if (res.code === 2000)
       setTimeout(() => router.back(), 1400)
   }
@@ -167,7 +167,7 @@ async function confirmPay() {
         <view class="pay-row">
           <text>资金通道</text>
           <text class="strong">
-            银行资金监管账户
+            微信支付分账资金托管
           </text>
         </view>
         <view class="pay-row">
