@@ -572,7 +572,7 @@
                 <i class="fa-solid fa-scale-balanced text-rose-400"></i>
                 五维一体防跳单智能风控与仲裁法庭
               </h2>
-              <p class="text-xs text-slate-400 mt-1">依托虚拟隐私号超短通话识别、IM关键字过滤、高频取消画像与电子合同违约追偿机制保护平台收益</p>
+              <p class="text-xs text-slate-400 mt-1">依托虚拟隐私专线智能质检、高频取消画像分析、保证金约束与电子合同违约追偿机制保护平台收益</p>
             </div>
             <span class="bg-rose-500/20 text-rose-400 text-xs font-bold px-3 py-1 rounded-full border border-rose-500/30 flex items-center gap-1.5">
               <i class="fa-solid fa-triangle-exclamation"></i> 当前高危跳单告警：{{ bypassCases.filter(c => c.status === '待仲裁').length }} 宗
@@ -1081,14 +1081,14 @@
         },
         {
           id: 2,
-          title: '发包方 IM 聊天敏感词过滤：发送拆分手机号与“微信私聊”',
+          title: '虚拟隐私号通话 AI 语义质检：检测到私下绕过平台交易引导',
           pilotName: '陈某某 (发包企业)',
           pilotCredit: 92,
           orderNo: 'ORD-20260829-1044',
           orderAmount: '12,500.00',
           riskLevel: '中危',
           confidence: 84.2,
-          triggerReason: '平台端即时通讯系统自动阻断手机号发送并弹窗安全风险警示',
+          triggerReason: '隐私专线双向录音由语音模型质检，命中“加微信直接转账”特征并自动告警',
           penalty: '0',
           status: '已裁决'
         }

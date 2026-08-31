@@ -1172,10 +1172,9 @@
             <div><i class="fa-solid fa-building-user"></i> 发包方：四川省电力公司温江分部 (对公结算)</div>
           </div>
           <div class="phone-row">
-            <span class="phone-note"><i class="fa-solid fa-lock"></i> 号码双向脱敏 · IM 全程存证</span>
+            <span class="phone-note"><i class="fa-solid fa-lock"></i> 双向号码脱敏 · 平台专线通话保护</span>
             <div style="display: flex; gap: 8px;">
-              <button class="btn btn-secondary btn-sm" @click="openOrderIm"><i class="fa-brands fa-weixin" style="color:#07C160;"></i> 平台IM</button>
-              <button class="btn btn-secondary btn-sm" @click="callPrivacyNumber"><i class="fa-solid fa-phone"></i> 虚拟号</button>
+              <button class="btn btn-secondary btn-sm" @click="callPrivacyNumber"><i class="fa-solid fa-phone"></i> 虚拟专线呼叫</button>
             </div>
           </div>
         </div>
@@ -2232,10 +2231,6 @@
         kfInput.value = '';
       };
 
-      const openOrderIm = () => {
-        openKfModal();
-      };
-
       const callPrivacyNumber = () => {
         showToast('正在通过平台虚拟隐私专线呼叫：170****9921 (通话录音防跳单存证中)');
       };
@@ -2289,7 +2284,6 @@
         openKfModal,
         sendKfMsg,
         handleSendKf,
-        openOrderIm,
         callPrivacyNumber
       };
     }
