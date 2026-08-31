@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>毕数飞行平台 - C端微信小程序演示系统</title>
-  <!-- Vue 3 & Font Awesome & Outfit 字体 -->
+  <!-- Vue 3 & Tailwind CSS & Font Awesome & Outfit 字体 -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -623,6 +624,174 @@
     .check-val { flex-shrink: 0; white-space: nowrap; }
     .check-val.ok { color: var(--color-success); font-weight: 600; }
     .check-val.info { color: var(--brand-primary); font-weight: 600; }
+
+    /* 官方民航执照卡片与仪表盘专用样式 */
+    .pilot-cert-card {
+      background: linear-gradient(140deg, #091C3E 0%, #102A54 50%, #1A3E78 100%);
+      border-radius: 16px;
+      padding: 16px;
+      margin: 12px 16px 12px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(9, 28, 62, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .pilot-cert-card::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 194, 255, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .cert-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cert-logo-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFE29F 0%, #FFAE34 100%);
+      color: #593800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .cert-title-zh {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #FFE6A8;
+    }
+    .cert-title-en {
+      font-size: 7.5px;
+      opacity: 0.75;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .cert-body {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      align-items: center;
+    }
+    .cert-avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .cert-avatar {
+      width: 66px;
+      height: 80px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #1C3D7A, #1677FF);
+      border: 2px solid #FFE29F;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .cert-verified-pill {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #00B578;
+      color: #fff;
+      font-size: 8.5px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      white-space: nowrap;
+      border: 1px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,181,120,0.4);
+    }
+    .cert-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .cert-pilot-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cert-row {
+      font-size: 11px;
+      color: rgba(255,255,255,0.85);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+    .cert-row b {
+      color: #FFE6A8;
+      font-weight: 600;
+    }
+    .cert-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(255,255,255,0.2);
+      font-size: 10px;
+      color: rgba(255,255,255,0.75);
+    }
+    .cert-seal {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #79D2FF;
+      font-weight: 600;
+    }
+
+    .stat-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 0 16px 12px;
+    }
+    .stat-card-box {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 12px 6px;
+      text-align: center;
+      box-shadow: var(--elev-1);
+      border: 1px solid rgba(229,230,235,0.6);
+    }
+    .stat-card-box .stat-label {
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+    .stat-card-box .stat-val {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 2px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .stat-card-box .stat-sub {
+      font-size: 9.5px;
+      color: var(--color-success);
+      margin-top: 2px;
+      font-weight: 500;
+    }
 
     /* 悬浮客服按钮 */
     .contact-float-btn {
@@ -1692,46 +1861,108 @@
       </div>
 
       <!-- 13. 飞手资质档案与 CAAC 执照卡片 (二级页面) -->
-      <div class="tab-pane" v-if="currentSubPage === 'pilot-profile'" style="background: var(--bg-page); min-height: 100%;">
+      <div class="tab-pane subpage-view" v-if="currentSubPage === 'pilot-profile'" style="background: var(--bg-page); min-height: 100%;">
         <div class="subpage-nav">
           <div class="subpage-back" @click="closeSubPage">
             <i class="fa-solid fa-arrow-left"></i> 飞手资质与官方执照档案
           </div>
-          <span class="badge badge-gold">CAAC金牌飞手</span>
+          <span class="badge badge-gold"><i class="fa-solid fa-medal"></i> CAAC金牌机长</span>
         </div>
 
-        <div class="card" style="margin-top: 12px;">
-          <div class="flex items-center gap-3">
-            <div class="avatar-ring" style="background:#1677FF;"><i class="fa-solid fa-user-astronaut"></i></div>
-            <div>
-              <div class="font-bold text-base text-slate-900">王建军</div>
-              <div class="text-xs text-slate-500 font-mono">执照号：CAAC-UAV-2026089912</div>
+        <!-- 1. 民航 CAAC 官方电子执照卡片 -->
+        <div class="pilot-cert-card">
+          <div class="cert-header">
+            <div class="cert-logo">
+              <div class="cert-logo-icon"><i class="fa-solid fa-plane"></i></div>
+              <div>
+                <div class="cert-title-zh">中国民用航空局 · 操控员执照</div>
+                <div class="cert-title-en">CAAC UNMANNED AIRCRAFT PILOT LICENSE</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="badge badge-gold" style="font-size: 9px; padding: 2px 6px;">UOM实名直连</span>
             </div>
           </div>
 
-          <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-100 text-center">
-            <div class="bg-slate-50 p-2 rounded-lg">
-              <div class="text-[10px] text-slate-400">累计安全航时</div>
-              <div class="text-sm font-bold text-slate-800 font-mono">328 小时</div>
+          <div class="cert-body">
+            <div class="cert-avatar-wrap">
+              <div class="cert-avatar">
+                <i class="fa-solid fa-user-astronaut"></i>
+              </div>
+              <div class="cert-verified-pill"><i class="fa-solid fa-shield-check"></i> 已核验</div>
             </div>
-            <div class="bg-slate-50 p-2 rounded-lg">
-              <div class="text-[10px] text-slate-400">履约信用分</div>
-              <div class="text-sm font-bold text-emerald-600 font-mono">98 分</div>
+            <div class="cert-details">
+              <div class="cert-pilot-name">
+                王建军
+                <span class="text-xs font-normal text-sky-200">/ 机长</span>
+              </div>
+              <div class="cert-row">执照号：<b>CAAC-UAV-2026089912</b></div>
+              <div class="cert-row">等级：<span style="color: #FFE6A8; font-weight: 600;">多旋翼 · 超视距驾驶员 (III类)</span></div>
+              <div class="cert-row" style="font-size: 10px; opacity: 0.85;">签发机构：民航局飞行标准司 (长期有效)</div>
             </div>
-            <div class="bg-slate-50 p-2 rounded-lg">
-              <div class="text-[10px] text-slate-400">已完工单量</div>
-              <div class="text-sm font-bold text-sky-600 font-mono">42 单</div>
+          </div>
+
+          <div class="cert-footer">
+            <div class="cert-seal">
+              <i class="fa-solid fa-certificate"></i>
+              <span>民航局防伪存证 0x9a4f...e81c</span>
+            </div>
+            <div class="text-[9.5px] opacity-80 font-mono">
+              有效期：2026-08 ~ 2032-08
             </div>
           </div>
         </div>
 
+        <!-- 2. 核心运营数据 3 宫格仪表盘 -->
+        <div class="stat-grid-3">
+          <div class="stat-card-box">
+            <div class="stat-label">累计安全航时</div>
+            <div class="stat-val text-slate-800">328 <span style="font-size: 11px; font-weight: normal;">h</span></div>
+            <div class="stat-sub">0事故/0炸机</div>
+          </div>
+          <div class="stat-card-box">
+            <div class="stat-label">平台履约信用</div>
+            <div class="stat-val text-emerald-600">98 <span style="font-size: 11px; font-weight: normal;">分</span></div>
+            <div class="stat-sub">极佳履约等级</div>
+          </div>
+          <div class="stat-card-box">
+            <div class="stat-label">已完工单量</div>
+            <div class="stat-val text-sky-600">42 <span style="font-size: 11px; font-weight: normal;">单</span></div>
+            <div class="stat-sub">100% 履约率</div>
+          </div>
+        </div>
+
+        <!-- 3. UOM 绑定的设备与机组归属卡片 -->
         <div class="card">
-          <div class="qual-title">已绑定的 UOM 设备与所属机组</div>
-          <div class="space-y-1.5 text-xs text-slate-600">
-            <div>挂靠企业：<strong>四川省天府空间信息测绘有限公司</strong></div>
-            <div>所属机组：<strong>巡检一组 (机长岗位)</strong></div>
-            <div>绑定设备：大疆 DJI M350 RTK (SN: 1581F4AA9812)</div>
+          <div class="qual-title flex items-center justify-between">
+            <span>已绑定 UOM 设备与所属机组</span>
+            <span class="badge badge-success text-[10px]">企业认证机组</span>
           </div>
+          <div class="space-y-2 mt-2 text-xs text-slate-600">
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100 gap-2">
+              <span class="text-slate-500 flex-shrink-0">挂靠企业</span>
+              <span class="text-slate-800 font-semibold truncate text-right">四川省天府空间信息测绘有限公司</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100 gap-2">
+              <span class="text-slate-500 flex-shrink-0">机组与岗位</span>
+              <span class="text-slate-800 font-semibold text-right">天府低空巡检一组 · 责任机长</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100 gap-2">
+              <span class="text-slate-500 flex-shrink-0">UOM 登记设备</span>
+              <span class="text-sky-600 font-mono font-semibold text-right">DJI M350 RTK (SN: 1581F4...)</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-emerald-50/60 rounded-lg border border-emerald-100 text-emerald-800 gap-2">
+              <span class="flex-shrink-0">强制商业飞行险</span>
+              <span class="font-semibold text-emerald-600 text-right"><i class="fa-solid fa-circle-check"></i> 人保 100 万三者险在保</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部操作区 -->
+        <div class="bottom-action">
+          <button class="btn btn-primary btn-block" @click="showToast('已调阅中国民航局官方电子执照证书及二维码', 'success')">
+            <i class="fa-solid fa-qrcode"></i> 出示官方电子执照二维码 (现场核验)
+          </button>
         </div>
       </div>
 
